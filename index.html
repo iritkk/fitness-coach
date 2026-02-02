@@ -11,12 +11,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg-primary: #1a202c;
             --bg-secondary: #2d3748;
@@ -31,7 +26,6 @@
             --safe-area-top: env(safe-area-inset-top, 20px);
             --safe-area-bottom: env(safe-area-inset-bottom, 20px);
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-primary);
@@ -40,11 +34,7 @@
             min-height: -webkit-fill-available;
             overflow: hidden;
         }
-
-        html {
-            height: -webkit-fill-available;
-        }
-
+        html { height: -webkit-fill-available; }
         .app {
             display: flex;
             flex-direction: column;
@@ -66,28 +56,10 @@
             z-index: 1000;
             transition: opacity 0.5s, visibility 0.5s;
         }
-
-        .splash.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        .splash-logo {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        .splash-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .splash-subtitle {
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-        }
-
+        .splash.hidden { opacity: 0; visibility: hidden; }
+        .splash-logo { font-size: 4rem; margin-bottom: 1rem; }
+        .splash-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .splash-subtitle { color: var(--text-secondary); margin-bottom: 2rem; }
         .splash-btn {
             background: var(--accent);
             color: white;
@@ -107,12 +79,7 @@
             padding: 1rem;
             background: var(--bg-secondary);
         }
-
-        .header-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
+        .header-title { font-size: 1.25rem; font-weight: 600; }
         .header-btn {
             background: none;
             border: none;
@@ -130,7 +97,6 @@
             padding: 0.5rem;
             gap: 0.25rem;
         }
-
         .nav-btn {
             flex: 1;
             background: none;
@@ -146,28 +112,12 @@
             font-size: 0.7rem;
             transition: all 0.2s;
         }
-
-        .nav-btn.active {
-            background: var(--bg-tertiary);
-            color: var(--accent);
-        }
-
-        .nav-btn svg {
-            width: 24px;
-            height: 24px;
-        }
+        .nav-btn.active { background: var(--bg-tertiary); color: var(--accent); }
+        .nav-btn svg { width: 24px; height: 24px; }
 
         /* Screens */
-        .screen {
-            display: none;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .screen.active {
-            display: flex;
-            flex-direction: column;
-        }
+        .screen { display: none; flex: 1; overflow: hidden; }
+        .screen.active { display: flex; flex-direction: column; }
 
         /* Chat Screen */
         .chat-messages {
@@ -178,82 +128,56 @@
             flex-direction: column;
             gap: 1rem;
         }
-
-        .message {
+        .message-container {
+            display: flex;
+            flex-direction: column;
             max-width: 85%;
+        }
+        .message-container.user { align-self: flex-end; }
+        .message-container.assistant { align-self: flex-start; }
+        .message {
             padding: 0.875rem 1rem;
             border-radius: 16px;
             line-height: 1.5;
             font-size: 0.95rem;
+            position: relative;
         }
-
         .message.user {
             background: var(--accent);
             color: white;
-            align-self: flex-end;
             border-bottom-right-radius: 4px;
         }
-
         .message.assistant {
             background: var(--bg-secondary);
-            align-self: flex-start;
             border-bottom-left-radius: 4px;
         }
-
-        /* Markdown styling in messages */
-        .message.assistant h1, .message.assistant h2, .message.assistant h3 {
-            margin: 0.5rem 0;
-            color: var(--accent);
-        }
-
+        .message.assistant h1, .message.assistant h2, .message.assistant h3 { margin: 0.5rem 0; color: var(--accent); }
         .message.assistant h1 { font-size: 1.2rem; }
         .message.assistant h2 { font-size: 1.1rem; }
         .message.assistant h3 { font-size: 1rem; }
+        .message.assistant ul, .message.assistant ol { margin: 0.5rem 0; padding-left: 1.5rem; }
+        .message.assistant li { margin: 0.25rem 0; }
+        .message.assistant strong { color: var(--accent-light); }
+        .message.assistant code { background: var(--bg-tertiary); padding: 0.125rem 0.375rem; border-radius: 4px; font-size: 0.85em; }
+        .message.assistant pre { background: var(--bg-tertiary); padding: 0.75rem; border-radius: 8px; overflow-x: auto; margin: 0.5rem 0; }
+        .message.assistant pre code { background: none; padding: 0; }
+        .message.assistant p { margin: 0.5rem 0; }
+        .message.assistant p:first-child { margin-top: 0; }
+        .message.assistant p:last-child { margin-bottom: 0; }
 
-        .message.assistant ul, .message.assistant ol {
-            margin: 0.5rem 0;
-            padding-left: 1.5rem;
-        }
-
-        .message.assistant li {
-            margin: 0.25rem 0;
-        }
-
-        .message.assistant strong {
-            color: var(--accent-light);
-        }
-
-        .message.assistant code {
-            background: var(--bg-tertiary);
-            padding: 0.125rem 0.375rem;
-            border-radius: 4px;
-            font-size: 0.85em;
-        }
-
-        .message.assistant pre {
-            background: var(--bg-tertiary);
-            padding: 0.75rem;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 0.5rem 0;
-        }
-
-        .message.assistant pre code {
+        .message-delete {
             background: none;
-            padding: 0;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+            align-self: flex-end;
+            margin-top: 0.25rem;
         }
-
-        .message.assistant p {
-            margin: 0.5rem 0;
-        }
-
-        .message.assistant p:first-child {
-            margin-top: 0;
-        }
-
-        .message.assistant p:last-child {
-            margin-bottom: 0;
-        }
+        .message-delete:hover { opacity: 1; color: var(--danger); }
 
         .typing-indicator {
             display: flex;
@@ -261,7 +185,6 @@
             padding: 1rem;
             align-self: flex-start;
         }
-
         .typing-indicator span {
             width: 8px;
             height: 8px;
@@ -269,10 +192,8 @@
             border-radius: 50%;
             animation: typing 1.4s infinite;
         }
-
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
         @keyframes typing {
             0%, 60%, 100% { transform: translateY(0); }
             30% { transform: translateY(-10px); }
@@ -285,7 +206,6 @@
             gap: 0.75rem;
             align-items: flex-end;
         }
-
         .chat-input {
             flex: 1;
             background: var(--bg-tertiary);
@@ -298,11 +218,7 @@
             max-height: 120px;
             line-height: 1.4;
         }
-
-        .chat-input::placeholder {
-            color: var(--text-secondary);
-        }
-
+        .chat-input::placeholder { color: var(--text-secondary); }
         .send-btn {
             background: var(--accent);
             border: none;
@@ -315,19 +231,10 @@
             cursor: pointer;
             flex-shrink: 0;
         }
-
-        .send-btn svg {
-            fill: white;
-            width: 20px;
-            height: 20px;
-        }
+        .send-btn svg { fill: white; width: 20px; height: 20px; }
 
         /* Dashboard */
-        .dashboard {
-            padding: 1rem;
-            overflow-y: auto;
-        }
-
+        .dashboard { padding: 1rem; overflow-y: auto; }
         .countdown-card {
             background: linear-gradient(135deg, var(--accent) 0%, #dd6b20 100%);
             border-radius: 16px;
@@ -335,27 +242,10 @@
             text-align: center;
             margin-bottom: 1rem;
         }
-
-        .countdown-label {
-            font-size: 0.875rem;
-            opacity: 0.9;
-        }
-
-        .countdown-value {
-            font-size: 3rem;
-            font-weight: 700;
-        }
-
-        .countdown-event {
-            font-size: 1rem;
-            opacity: 0.9;
-        }
-
-        .countdown-date {
-            font-size: 0.8rem;
-            opacity: 0.7;
-            margin-top: 0.25rem;
-        }
+        .countdown-label { font-size: 0.875rem; opacity: 0.9; }
+        .countdown-value { font-size: 3rem; font-weight: 700; }
+        .countdown-event { font-size: 1rem; opacity: 0.9; }
+        .countdown-date { font-size: 0.8rem; opacity: 0.7; margin-top: 0.25rem; }
 
         .quick-actions {
             display: grid;
@@ -363,7 +253,6 @@
             gap: 0.75rem;
             margin-bottom: 1rem;
         }
-
         .quick-action {
             background: var(--bg-secondary);
             border: none;
@@ -377,12 +266,7 @@
             gap: 0.5rem;
             font-size: 0.75rem;
         }
-
-        .quick-action svg {
-            width: 24px;
-            height: 24px;
-            stroke: var(--accent);
-        }
+        .quick-action svg { width: 24px; height: 24px; stroke: var(--accent); }
 
         .stats-grid {
             display: grid;
@@ -390,101 +274,35 @@
             gap: 0.75rem;
             margin-bottom: 1rem;
         }
+        .stat-card { background: var(--bg-secondary); border-radius: 12px; padding: 1rem; }
+        .stat-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .stat-value { font-size: 1.5rem; font-weight: 600; }
+        .stat-unit { font-size: 0.875rem; color: var(--text-secondary); }
+        .stat-trend { font-size: 0.75rem; color: var(--text-secondary); }
+        .stat-trend.up { color: var(--success); }
 
-        .stat-card {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 1rem;
-        }
-
-        .stat-label {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .stat-unit {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        .stat-trend {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .stat-trend.up {
-            color: var(--success);
-        }
-
-        .knee-card {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 1rem;
-        }
-
-        .knee-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-        }
-
-        .knee-title {
-            font-weight: 600;
-        }
-
-        .knee-status {
-            display: flex;
-            gap: 0.5rem;
-        }
-
+        .knee-card { background: var(--bg-secondary); border-radius: 12px; padding: 1rem; }
+        .knee-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+        .knee-title { font-weight: 600; }
+        .knee-status { display: flex; gap: 0.5rem; }
         .knee-dot {
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             cursor: pointer;
-            border: 2px solid transparent;
+            border: 3px solid transparent;
             transition: all 0.2s;
         }
-
         .knee-dot.green { background: var(--success); }
         .knee-dot.yellow { background: var(--warning); }
         .knee-dot.red { background: var(--danger); }
-
-        .knee-dot.active {
-            border-color: white;
-            transform: scale(1.2);
-        }
-
-        .knee-info {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
+        .knee-dot.active { border-color: white; transform: scale(1.15); }
+        .knee-info { font-size: 0.875rem; color: var(--text-secondary); }
 
         /* Training Screen */
-        .training-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem;
-        }
-
-        .training-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .training-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
+        .training-list { flex: 1; overflow-y: auto; padding: 1rem; }
+        .training-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .training-title { font-size: 1.25rem; font-weight: 600; }
         .add-btn {
             background: var(--accent);
             border: none;
@@ -498,69 +316,70 @@
             font-size: 1.5rem;
             color: white;
         }
+        .activity-card { background: var(--bg-secondary); border-radius: 12px; padding: 1rem; margin-bottom: 0.75rem; }
+        .activity-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
+        .activity-type { display: flex; align-items: center; gap: 0.5rem; }
+        .activity-icon { font-size: 1.25rem; }
+        .activity-name { font-weight: 600; }
+        .activity-date { font-size: 0.75rem; color: var(--text-secondary); }
+        .activity-stats { display: flex; gap: 1rem; font-size: 0.875rem; color: var(--text-secondary); }
+        .activity-stat { display: flex; align-items: center; gap: 0.25rem; }
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-secondary); }
+        .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; }
 
-        .activity-card {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .activity-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 0.5rem;
-        }
-
-        .activity-type {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .activity-icon {
-            font-size: 1.25rem;
-        }
-
-        .activity-name {
+        /* Strava Connect */
+        .strava-connect {
+            background: #fc4c02;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: white;
             font-weight: 600;
-        }
-
-        .activity-date {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .activity-stats {
-            display: flex;
-            gap: 1rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        .activity-stat {
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.25rem;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: var(--text-secondary);
-        }
-
-        .empty-state-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
         }
 
         /* Nutrition Screen */
-        .nutrition-screen {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem;
+        .nutrition-screen { flex: 1; overflow-y: auto; padding: 1rem; }
+
+        /* Date Navigation */
+        .date-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 0.75rem;
+        }
+        .date-nav-btn {
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .date-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .date-nav-current { font-weight: 600; min-width: 140px; text-align: center; }
+        .date-nav-today {
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            color: white;
+            font-size: 0.75rem;
+            cursor: pointer;
         }
 
         .calorie-card {
@@ -570,132 +389,31 @@
             text-align: center;
             margin-bottom: 1rem;
         }
+        .calorie-ring { width: 150px; height: 150px; margin: 0 auto 1rem; position: relative; }
+        .calorie-ring svg { transform: rotate(-90deg); }
+        .calorie-ring-bg { fill: none; stroke: rgba(255,255,255,0.2); stroke-width: 12; }
+        .calorie-ring-progress { fill: none; stroke: white; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 408; stroke-dashoffset: 408; transition: stroke-dashoffset 0.5s; }
+        .calorie-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+        .calorie-remaining { font-size: 2rem; font-weight: 700; }
+        .calorie-label { font-size: 0.75rem; opacity: 0.8; }
+        .calorie-breakdown { display: flex; justify-content: space-around; margin-top: 1rem; }
+        .calorie-item { text-align: center; }
+        .calorie-item-value { font-size: 1.25rem; font-weight: 600; }
+        .calorie-item-label { font-size: 0.7rem; opacity: 0.8; }
 
-        .calorie-ring {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 1rem;
-            position: relative;
-        }
-
-        .calorie-ring svg {
-            transform: rotate(-90deg);
-        }
-
-        .calorie-ring-bg {
-            fill: none;
-            stroke: rgba(255,255,255,0.2);
-            stroke-width: 12;
-        }
-
-        .calorie-ring-progress {
-            fill: none;
-            stroke: white;
-            stroke-width: 12;
-            stroke-linecap: round;
-            stroke-dasharray: 408;
-            stroke-dashoffset: 408;
-            transition: stroke-dashoffset 0.5s;
-        }
-
-        .calorie-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-
-        .calorie-remaining {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .calorie-label {
-            font-size: 0.75rem;
-            opacity: 0.8;
-        }
-
-        .calorie-breakdown {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 1rem;
-        }
-
-        .calorie-item {
-            text-align: center;
-        }
-
-        .calorie-item-value {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .calorie-item-label {
-            font-size: 0.7rem;
-            opacity: 0.8;
-        }
-
-        .macros-card {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .macros-title {
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-
-        .macro-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .macro-label {
-            width: 80px;
-            font-size: 0.875rem;
-        }
-
-        .macro-bar {
-            flex: 1;
-            height: 8px;
-            background: var(--bg-tertiary);
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 0 0.75rem;
-        }
-
-        .macro-bar-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.3s;
-        }
-
+        .macros-card { background: var(--bg-secondary); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
+        .macros-title { font-weight: 600; margin-bottom: 0.75rem; }
+        .macro-row { display: flex; align-items: center; margin-bottom: 0.5rem; }
+        .macro-label { width: 80px; font-size: 0.875rem; }
+        .macro-bar { flex: 1; height: 8px; background: var(--bg-tertiary); border-radius: 4px; overflow: hidden; margin: 0 0.75rem; }
+        .macro-bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
         .macro-bar-fill.protein { background: #ed8936; }
         .macro-bar-fill.carbs { background: #4299e1; }
         .macro-bar-fill.fat { background: #9f7aea; }
+        .macro-value { font-size: 0.875rem; width: 70px; text-align: right; }
 
-        .macro-value {
-            font-size: 0.875rem;
-            width: 60px;
-            text-align: right;
-        }
-
-        .meal-input-card {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .meal-input-title {
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-
+        .meal-input-card { background: var(--bg-secondary); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
+        .meal-input-title { font-weight: 600; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
         .meal-textarea {
             width: 100%;
             background: var(--bg-tertiary);
@@ -705,67 +423,23 @@
             color: var(--text-primary);
             font-size: 0.9rem;
             resize: none;
-            min-height: 80px;
-            margin-bottom: 0.75rem;
+            min-height: 60px;
         }
+        .meal-textarea::placeholder { color: var(--text-secondary); }
+        .meal-hint { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem; }
+        .analyzing-indicator { display: flex; align-items: center; gap: 0.5rem; color: var(--accent); font-size: 0.875rem; margin-top: 0.5rem; }
+        .analyzing-indicator.hidden { display: none; }
 
-        .meal-textarea::placeholder {
-            color: var(--text-secondary);
-        }
+        .meals-list { background: var(--bg-secondary); border-radius: 12px; padding: 1rem; }
+        .meals-title { font-weight: 600; margin-bottom: 0.75rem; }
+        .meal-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--bg-tertiary); }
+        .meal-item:last-child { border-bottom: none; }
+        .meal-info { flex: 1; }
+        .meal-name { font-size: 0.9rem; }
+        .meal-time { font-size: 0.75rem; color: var(--text-secondary); }
+        .meal-kcal { font-weight: 600; color: var(--accent); }
 
-        .analyze-btn {
-            width: 100%;
-            background: var(--accent);
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .meals-list {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 1rem;
-        }
-
-        .meals-title {
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-
-        .meal-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--bg-tertiary);
-        }
-
-        .meal-item:last-child {
-            border-bottom: none;
-        }
-
-        .meal-info {
-            flex: 1;
-        }
-
-        .meal-name {
-            font-size: 0.9rem;
-        }
-
-        .meal-time {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .meal-kcal {
-            font-weight: 600;
-            color: var(--accent);
-        }
-
-        /* Settings Modal */
+        /* Modals */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -778,12 +452,7 @@
             visibility: hidden;
             transition: all 0.3s;
         }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
+        .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal {
             background: var(--bg-secondary);
             border-radius: 20px 20px 0 0;
@@ -794,11 +463,7 @@
             transform: translateY(100%);
             transition: transform 0.3s;
         }
-
-        .modal-overlay.active .modal {
-            transform: translateY(0);
-        }
-
+        .modal-overlay.active .modal { transform: translateY(0); }
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -809,135 +474,20 @@
             top: 0;
             background: var(--bg-secondary);
         }
-
-        .modal-header h2 {
-            font-size: 1.125rem;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .modal-content {
-            padding: 1rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-        }
-
-        .form-input {
-            width: 100%;
-            background: var(--bg-tertiary);
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem;
-            color: var(--text-primary);
-            font-size: 1rem;
-        }
-
-        .form-textarea {
-            width: 100%;
-            background: var(--bg-tertiary);
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem;
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            resize: vertical;
-            min-height: 100px;
-            font-family: inherit;
-        }
-
-        .form-hint {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-top: 0.25rem;
-        }
-
-        .form-section {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-section-title {
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: var(--accent);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 0.875rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            margin-bottom: 0.5rem;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
-        /* Knee Modal */
-        .knee-modal-content {
-            text-align: center;
-            padding: 1rem;
-        }
-
-        .knee-options {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin: 1.5rem 0;
-        }
-
-        .knee-option {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-        }
-
-        .knee-option-dot {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .knee-option-dot.green { background: var(--success); }
-        .knee-option-dot.yellow { background: var(--warning); }
-        .knee-option-dot.red { background: var(--danger); }
-
-        .knee-option.active .knee-option-dot {
-            border-color: white;
-            transform: scale(1.1);
-        }
-
-        .knee-option-label {
-            font-size: 0.875rem;
-        }
+        .modal-header h2 { font-size: 1.125rem; }
+        .modal-close { background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; }
+        .modal-content { padding: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .form-input { width: 100%; background: var(--bg-tertiary); border: none; border-radius: 8px; padding: 0.75rem; color: var(--text-primary); font-size: 1rem; }
+        .form-textarea { width: 100%; background: var(--bg-tertiary); border: none; border-radius: 8px; padding: 0.75rem; color: var(--text-primary); font-size: 0.9rem; resize: vertical; min-height: 100px; font-family: inherit; }
+        .form-hint { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem; }
+        .form-section { margin-bottom: 1.5rem; }
+        .form-section-title { font-weight: 600; margin-bottom: 0.75rem; color: var(--accent); }
+        .btn { width: 100%; padding: 0.875rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; border: none; margin-bottom: 0.5rem; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); }
+        .btn-danger { background: var(--danger); color: white; }
     </style>
 </head>
 <body>
@@ -953,29 +503,14 @@
         <!-- Header -->
         <header class="header">
             <h1 class="header-title">Fitness Coach</h1>
-            <button class="header-btn" onclick="openSettings()">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                </svg>
-            </button>
+            <button class="header-btn" onclick="openSettings()">⚙️</button>
         </header>
 
         <!-- Chat Screen -->
         <div class="screen active" id="screen-chat">
-            <div class="chat-messages" id="chat-messages">
-                <div class="message assistant">
-                    Hallo! 👋 Ich bin dein KI-Fitness-Coach. Wie kann ich dir heute helfen?
-                </div>
-            </div>
+            <div class="chat-messages" id="chat-messages"></div>
             <div class="chat-input-container">
-                <textarea
-                    class="chat-input"
-                    id="chat-input"
-                    placeholder="Nachricht eingeben..."
-                    rows="1"
-                    onkeydown="handleKeyDown(event)"
-                ></textarea>
+                <textarea class="chat-input" id="chat-input" placeholder="Nachricht eingeben..." rows="1" onkeydown="handleKeyDown(event)"></textarea>
                 <button class="send-btn" onclick="sendMessage()">
                     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
@@ -985,52 +520,48 @@
         <!-- Dashboard Screen -->
         <div class="screen" id="screen-dashboard">
             <div class="dashboard">
-                <!-- Countdown -->
                 <div class="countdown-card">
                     <div class="countdown-label">Tage bis Madrid</div>
-                    <div class="countdown-value" id="countdown-days">49</div>
+                    <div class="countdown-value" id="countdown-days">48</div>
                     <div class="countdown-event">🇪🇸 Halbmarathon Madrid</div>
                     <div class="countdown-date" id="countdown-date">22. März 2026</div>
                 </div>
 
-                <!-- Quick Actions -->
                 <div class="quick-actions">
-                    <button class="quick-action" onclick="logKneeStatus()">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        Knie-Check
-                    </button>
-                    <button class="quick-action" onclick="showScreen('chat'); askCoach('Was steht heute auf dem Plan?')">
+                    <button class="quick-action" onclick="showScreen('chat'); askCoach('Was steht heute auf meinem Trainingsplan?')">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                         Tagesplan
                     </button>
-                    <button class="quick-action" onclick="showScreen('chat'); askCoach('Wie sollte ich mich heute ernähren?')">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                        Ernährung
+                    <button class="quick-action" onclick="showScreen('chat'); askCoach('Erstelle mir einen angepassten Wochenplan!')">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                        Wochenplan
+                    </button>
+                    <button class="quick-action" onclick="showScreen('chat'); askCoach('Analysiere meine letzten Trainings und gib mir Feedback!')">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        Analyse
                     </button>
                 </div>
 
-                <!-- Week Stats -->
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">Diese Woche</div>
                         <div class="stat-value" id="week-km">0 <span class="stat-unit">km</span></div>
-                        <div class="stat-trend up" id="week-trend">Ziel: 22-25 km</div>
+                        <div class="stat-trend" id="week-trend">aus Strava</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Aktuelle Woche</div>
-                        <div class="stat-value" id="current-week">1</div>
-                        <div class="stat-trend" id="week-phase">Aufbau I</div>
+                        <div class="stat-label">Letzte 4 Wochen</div>
+                        <div class="stat-value" id="month-km">0 <span class="stat-unit">km</span></div>
+                        <div class="stat-trend" id="month-trend">Durchschnitt</div>
                     </div>
                 </div>
 
-                <!-- Knee Status -->
                 <div class="knee-card">
                     <div class="knee-header">
                         <div class="knee-title">🦵 Knie-Status heute</div>
                         <div class="knee-status">
-                            <div class="knee-dot green" id="knee-green" onclick="setKneeStatus('green')"></div>
-                            <div class="knee-dot yellow" id="knee-yellow" onclick="setKneeStatus('yellow')"></div>
-                            <div class="knee-dot red" id="knee-red" onclick="setKneeStatus('red')"></div>
+                            <div class="knee-dot green" onclick="setKneeStatus('green')"></div>
+                            <div class="knee-dot yellow" onclick="setKneeStatus('yellow')"></div>
+                            <div class="knee-dot red" onclick="setKneeStatus('red')"></div>
                         </div>
                     </div>
                     <div class="knee-info" id="knee-info">Tippe auf eine Farbe um deinen Status zu aktualisieren</div>
@@ -1049,7 +580,11 @@
                     <div class="empty-state">
                         <div class="empty-state-icon">🏃</div>
                         <p>Noch keine Aktivitäten</p>
-                        <p style="font-size: 0.875rem; margin-top: 0.5rem;">Verbinde Strava oder füge manuell hinzu</p>
+                        <p style="font-size: 0.875rem; margin-top: 0.5rem;">Verbinde Strava um deine Läufe zu importieren</p>
+                        <button class="strava-connect" onclick="connectStrava()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>
+                            Mit Strava verbinden
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1058,7 +593,14 @@
         <!-- Nutrition Screen -->
         <div class="screen" id="screen-nutrition">
             <div class="nutrition-screen">
-                <!-- Calorie Overview -->
+                <!-- Date Navigation -->
+                <div class="date-nav">
+                    <button class="date-nav-btn" onclick="changeNutritionDate(-1)">‹</button>
+                    <div class="date-nav-current" id="nutrition-date">Heute</div>
+                    <button class="date-nav-btn" onclick="changeNutritionDate(1)" id="date-nav-next">›</button>
+                    <button class="date-nav-today" onclick="goToNutritionToday()">Heute</button>
+                </div>
+
                 <div class="calorie-card">
                     <div class="calorie-ring">
                         <svg width="150" height="150" viewBox="0 0 150 150">
@@ -1086,50 +628,39 @@
                     </div>
                 </div>
 
-                <!-- Macros -->
                 <div class="macros-card">
                     <div class="macros-title">Makros</div>
                     <div class="macro-row">
                         <span class="macro-label">Protein</span>
-                        <div class="macro-bar">
-                            <div class="macro-bar-fill protein" id="protein-bar" style="width: 0%"></div>
-                        </div>
-                        <span class="macro-value" id="protein-value">0/120g</span>
+                        <div class="macro-bar"><div class="macro-bar-fill protein" id="protein-bar" style="width: 0%"></div></div>
+                        <span class="macro-value" id="protein-value">0/175g</span>
                     </div>
                     <div class="macro-row">
                         <span class="macro-label">Kohlenhydr.</span>
-                        <div class="macro-bar">
-                            <div class="macro-bar-fill carbs" id="carbs-bar" style="width: 0%"></div>
-                        </div>
+                        <div class="macro-bar"><div class="macro-bar-fill carbs" id="carbs-bar" style="width: 0%"></div></div>
                         <span class="macro-value" id="carbs-value">0/250g</span>
                     </div>
                     <div class="macro-row">
                         <span class="macro-label">Fett</span>
-                        <div class="macro-bar">
-                            <div class="macro-bar-fill fat" id="fat-bar" style="width: 0%"></div>
-                        </div>
+                        <div class="macro-bar"><div class="macro-bar-fill fat" id="fat-bar" style="width: 0%"></div></div>
                         <span class="macro-value" id="fat-value">0/70g</span>
                     </div>
                 </div>
 
-                <!-- Meal Input -->
-                <div class="meal-input-card">
+                <div class="meal-input-card" id="meal-input-card">
                     <div class="meal-input-title">🍽️ Was hast du gegessen?</div>
-                    <textarea
-                        class="meal-textarea"
-                        id="meal-input"
-                        placeholder="z.B.: Frühstück: 2 Scheiben Vollkornbrot mit Käse, 1 Apfel, Kaffee mit Milch..."
-                    ></textarea>
-                    <button class="analyze-btn" onclick="analyzeMeal()">Mit KI analysieren</button>
+                    <textarea class="meal-textarea" id="meal-input" placeholder="Einfach eintippen, z.B.: 2 Eier, Toast, Kaffee mit Milch" onkeydown="handleMealKeyDown(event)" onblur="handleMealBlur()"></textarea>
+                    <div class="meal-hint">Drücke Enter oder tippe fertig - wird automatisch analysiert</div>
+                    <div class="analyzing-indicator hidden" id="analyzing-indicator">
+                        <span class="typing-indicator" style="padding: 0;"><span></span><span></span><span></span></span>
+                        Analysiere...
+                    </div>
                 </div>
 
-                <!-- Today's Meals -->
                 <div class="meals-list">
-                    <div class="meals-title">Heute gegessen</div>
+                    <div class="meals-title" id="meals-title">Heute gegessen</div>
                     <div id="meals-today">
-                        <div class="empty-state" style="padding: 1rem;">
-                            <p style="font-size: 0.875rem; color: var(--text-secondary);">Noch nichts eingetragen</p>
-                        </div>
+                        <div style="text-align: center; padding: 1rem; color: var(--text-secondary); font-size: 0.875rem;">Noch nichts eingetragen</div>
                     </div>
                 </div>
             </div>
@@ -1138,34 +669,19 @@
         <!-- Navigation -->
         <nav class="nav">
             <button class="nav-btn active" onclick="showScreen('chat')" id="nav-chat">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                 Chat
             </button>
             <button class="nav-btn" onclick="showScreen('dashboard')" id="nav-dashboard">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="14" width="7" height="7"></rect>
-                    <rect x="3" y="14" width="7" height="7"></rect>
-                </svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                 Dashboard
             </button>
             <button class="nav-btn" onclick="showScreen('training')" id="nav-training">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                </svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                 Training
             </button>
             <button class="nav-btn" onclick="showScreen('nutrition')" id="nav-nutrition">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-                    <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-                    <line x1="6" y1="1" x2="6" y2="4"></line>
-                    <line x1="10" y1="1" x2="10" y2="4"></line>
-                    <line x1="14" y1="1" x2="14" y2="4"></line>
-                </svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
                 Ernährung
             </button>
         </nav>
@@ -1180,11 +696,16 @@
             </div>
             <div class="modal-content">
                 <div class="form-section">
-                    <div class="form-section-title">🔑 API Einstellungen</div>
+                    <div class="form-section-title">🔑 API & Verbindungen</div>
                     <div class="form-group">
                         <label class="form-label">Claude API Key</label>
                         <input type="password" class="form-input" id="api-key-input" placeholder="sk-ant-...">
-                        <p class="form-hint">Hol dir deinen Key auf console.anthropic.com</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Strava</label>
+                        <button class="strava-connect" onclick="connectStrava()" id="strava-btn" style="width: 100%;">
+                            Mit Strava verbinden
+                        </button>
                     </div>
                 </div>
 
@@ -1203,14 +724,8 @@
                 <div class="form-section">
                     <div class="form-section-title">🤖 Coach-Persönlichkeit</div>
                     <div class="form-group">
-                        <label class="form-label">Expertenrolle & Kontext</label>
-                        <textarea class="form-textarea" id="coach-persona-input" placeholder="z.B.: Du bist ein erfahrener Laufcoach mit Fokus auf Verletzungsprävention..."></textarea>
-                        <p class="form-hint">Beschreibe, wie der Coach sich verhalten soll</p>
-                    </div>
-                    <div class="form-group">
                         <label class="form-label">Zusätzliche Infos über dich</label>
                         <textarea class="form-textarea" id="user-context-input" placeholder="z.B.: Ich arbeite im Büro, stehe um 6 Uhr auf, trainiere am liebsten abends..."></textarea>
-                        <p class="form-hint">Je mehr Kontext, desto bessere Tipps</p>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Tonalität</label>
@@ -1229,15 +744,21 @@
                         <label class="form-label">Täglicher Kalorienbedarf (kcal)</label>
                         <input type="number" class="form-input" id="calorie-goal-input" value="2100">
                     </div>
+                    <div class="form-group">
+                        <label class="form-label">Körpergewicht (kg) - für Proteinberechnung</label>
+                        <input type="number" class="form-input" id="weight-input" value="87.5">
+                        <div class="form-hint">Protein-Ziel: 2g pro kg Körpergewicht</div>
+                    </div>
                 </div>
 
                 <button class="btn btn-primary" onclick="saveSettings()">Speichern</button>
+                <button class="btn btn-danger" onclick="clearChatHistory()">Chat-Verlauf löschen</button>
                 <button class="btn btn-secondary" onclick="closeSettings()">Abbrechen</button>
             </div>
         </div>
     </div>
 
-    <!-- Add Activity Modal -->
+    <!-- Activity Modal -->
     <div class="modal-overlay" id="activity-modal">
         <div class="modal">
             <div class="modal-header">
@@ -1268,38 +789,18 @@
                     <input type="number" class="form-input" id="activity-duration" placeholder="z.B. 30">
                 </div>
                 <div class="form-group">
+                    <label class="form-label">Wie hat sich dein Knie angefühlt?</label>
+                    <select class="form-input" id="activity-knee">
+                        <option value="green">🟢 Alles OK</option>
+                        <option value="yellow">🟡 Leichte Beschwerden</option>
+                        <option value="red">🔴 Schmerzen</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label class="form-label">Notizen</label>
                     <textarea class="form-textarea" id="activity-notes" placeholder="Wie hast du dich gefühlt?"></textarea>
                 </div>
                 <button class="btn btn-primary" onclick="saveActivity()">Speichern</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Knee Status Modal -->
-    <div class="modal-overlay" id="knee-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>Knie-Status</h2>
-                <button class="modal-close" onclick="closeKneeModal()">×</button>
-            </div>
-            <div class="knee-modal-content">
-                <p>Wie fühlt sich dein Knie heute an?</p>
-                <div class="knee-options">
-                    <div class="knee-option" onclick="selectKneeOption('green')">
-                        <div class="knee-option-dot green"></div>
-                        <span class="knee-option-label">Alles OK</span>
-                    </div>
-                    <div class="knee-option" onclick="selectKneeOption('yellow')">
-                        <div class="knee-option-dot yellow"></div>
-                        <span class="knee-option-label">Leichte Beschwerden</span>
-                    </div>
-                    <div class="knee-option" onclick="selectKneeOption('red')">
-                        <div class="knee-option-dot red"></div>
-                        <span class="knee-option-label">Schmerzen</span>
-                    </div>
-                </div>
-                <button class="btn btn-primary" onclick="confirmKneeStatus()">Bestätigen</button>
             </div>
         </div>
     </div>
@@ -1312,15 +813,22 @@
             raceDate: localStorage.getItem('raceDate') || '2026-03-22',
             activities: JSON.parse(localStorage.getItem('activities') || '[]'),
             kneeStatus: localStorage.getItem('kneeStatus') || 'green',
+            kneeHistory: JSON.parse(localStorage.getItem('kneeHistory') || '[]'),
             messages: JSON.parse(localStorage.getItem('messages') || '[]'),
             hasSeenSplash: localStorage.getItem('hasSeenSplash') === 'true',
-            coachPersona: localStorage.getItem('coachPersona') || '',
             userContext: localStorage.getItem('userContext') || '',
             tone: localStorage.getItem('tone') || 'motivierend',
             calorieGoal: parseInt(localStorage.getItem('calorieGoal')) || 2100,
-            meals: JSON.parse(localStorage.getItem('meals') || '[]'),
-            selectedKnee: null
+            weight: parseFloat(localStorage.getItem('weight')) || 87.5,
+            stravaConnected: localStorage.getItem('stravaConnected') === 'true',
+            stravaActivities: JSON.parse(localStorage.getItem('stravaActivities') || '[]'),
+            currentNutritionDate: new Date().toISOString().split('T')[0]
         };
+
+        // Computed protein goal (2g per kg)
+        function getProteinGoal() {
+            return Math.round(state.weight * 2);
+        }
 
         // Helper functions
         function formatDate(date) {
@@ -1333,205 +841,235 @@
             return `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth()+1).toString().padStart(2, '0')}.`;
         }
 
-        function getWeekNumber() {
+        function getDaysUntilRace() {
             const raceDate = new Date(state.raceDate);
             const today = new Date();
-            const diffTime = raceDate - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            const totalWeeks = 7; // 7-week plan
-            const weeksUntilRace = Math.ceil(diffDays / 7);
-            return Math.max(1, totalWeeks - weeksUntilRace + 1);
+            return Math.ceil((raceDate - today) / (1000 * 60 * 60 * 24));
         }
 
-        function getWeekPhase(weekNum) {
-            if (weekNum <= 2) return 'Aufbau I';
-            if (weekNum <= 4) return 'Aufbau II';
-            if (weekNum <= 5) return 'Peak';
-            if (weekNum === 6) return 'Tapering';
-            return 'Rennwoche';
+        function getDateKey(dateStr) {
+            return `meals_${dateStr}`;
         }
 
-        // Generate date-based training context
+        function getMealsForDate(dateStr) {
+            return JSON.parse(localStorage.getItem(getDateKey(dateStr)) || '[]');
+        }
+
+        function saveMealsForDate(dateStr, meals) {
+            localStorage.setItem(getDateKey(dateStr), JSON.stringify(meals));
+        }
+
+        // Generate DYNAMIC training context - NO hardcoded plan!
         function generateTrainingContext() {
             const today = new Date();
-            const raceDate = new Date(state.raceDate);
-            const daysUntilRace = Math.ceil((raceDate - today) / (1000 * 60 * 60 * 24));
+            const daysUntilRace = getDaysUntilRace();
             const weeksUntilRace = Math.ceil(daysUntilRace / 7);
-            const currentWeek = getWeekNumber();
-            const dayOfWeek = today.getDay(); // 0 = Sunday
 
-            // Get tone description
+            // Get recent activities for context
+            const recentActivities = [...state.activities, ...state.stravaActivities]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 10);
+
+            const activitiesSummary = recentActivities.length > 0
+                ? recentActivities.map(a => {
+                    const date = new Date(a.date).toLocaleDateString('de-DE');
+                    const type = a.type || 'run';
+                    const dist = a.distance ? `${a.distance}km` : '';
+                    const dur = a.duration ? `${a.duration}min` : '';
+                    const knee = a.kneeStatus ? `(Knie: ${a.kneeStatus})` : '';
+                    return `- ${date}: ${type} ${dist} ${dur} ${knee}`.trim();
+                }).join('\n')
+                : 'Noch keine Aktivitäten aufgezeichnet.';
+
+            // Calculate weekly stats
+            const thisWeekStart = new Date(today);
+            thisWeekStart.setDate(today.getDate() - today.getDay() + 1);
+            thisWeekStart.setHours(0,0,0,0);
+
+            const thisWeekActivities = [...state.activities, ...state.stravaActivities]
+                .filter(a => new Date(a.date) >= thisWeekStart && a.type === 'run');
+            const thisWeekKm = thisWeekActivities.reduce((sum, a) => sum + (a.distance || 0), 0);
+
+            // Knee history
+            const kneeHistorySummary = state.kneeHistory.slice(-7).map(k =>
+                `${new Date(k.date).toLocaleDateString('de-DE')}: ${k.status}`
+            ).join(', ') || 'Keine Historie';
+
+            // Tone mapping
             const toneMap = {
-                'motivierend': 'Sei motivierend, positiv und ermutigend. Feiere Erfolge und hilf bei Rückschlägen.',
-                'sachlich': 'Sei sachlich und direkt. Fokussiere auf Fakten und konkrete Zahlen.',
-                'freundlich': 'Sei freundlich und locker. Nutze eine entspannte Sprache.',
-                'streng': 'Sei streng und fordernd. Push mich zu Höchstleistungen.'
+                'motivierend': 'Sei motivierend und positiv. Feiere Erfolge!',
+                'sachlich': 'Sei sachlich und direkt. Fokus auf Fakten.',
+                'freundlich': 'Sei freundlich und locker.',
+                'streng': 'Sei streng und fordernd. Push mich!'
             };
 
-            // Generate this week's training dates
-            const weekStart = new Date(today);
-            weekStart.setDate(today.getDate() - today.getDay() + 1); // Monday
+            return `Du bist ein erfahrener KI-Laufcoach spezialisiert auf Comeback nach Verletzungen.
 
-            const trainingDays = [];
-            for (let i = 0; i < 7; i++) {
-                const date = new Date(weekStart);
-                date.setDate(weekStart.getDate() + i);
-                trainingDays.push(formatShortDate(date));
-            }
+HEUTE: ${formatDate(today)}
+ZIEL: Halbmarathon Madrid am 22. März 2026 (in ${daysUntilRace} Tagen / ${weeksUntilRace} Wochen)
+ZIELZEIT: ${state.goalTime} (ambitioniert nach Verletzung)
 
-            let context = `Du bist ein KI-Fitness-Coach für Fabian, der sich auf seinen Halbmarathon in Madrid am 22. März 2026 vorbereitet.
-
-HEUTE IST: ${formatDate(today)}
-TAGE BIS ZUM RENNEN: ${daysUntilRace}
-AKTUELLE TRAININGSWOCHE: ${currentWeek} von 7 (${getWeekPhase(currentWeek)})
-
-WICHTIGE INFOS ÜBER FABIAN:
-- Hat eine Teilruptur am vorderen Kreuzband (VKB) und war 3 Monate pausiert
-- Ist seit 2-4 Wochen wieder im Training
-- Erster Comeback-Lauf: 7 km mit leichten Beschwerden (Kniebandage)
-- Vor der Verletzung: Hobby-Läufer (15-30 km/Woche)
-- Ziel: Sub 2:00h (ambitioniert, realistischer wäre 2:10-2:20)
-- Verwendet: Garmin Forerunner 255, Strava, Fitbod
+WICHTIG ÜBER DEN ATHLETEN (Fabian):
+- Teilruptur vorderes Kreuzband (VKB), war 3 Monate pausiert
+- Comeback-Phase: Erst seit wenigen Wochen wieder im Training
+- Vor Verletzung: Hobby-Läufer mit 15-30 km/Woche
+- Ausrüstung: Garmin Forerunner 255, nutzt Strava
 ${state.userContext ? `- Zusätzlicher Kontext: ${state.userContext}` : ''}
 
-AKTUELLER STATUS:
-- Knie-Status heute: ${state.kneeStatus === 'green' ? 'Grün (OK)' : state.kneeStatus === 'yellow' ? 'Gelb (Vorsicht)' : 'Rot (Pause!)'}
+⚠️ AKTUELLER KNIE-STATUS: ${state.kneeStatus === 'green' ? '🟢 GRÜN (OK)' : state.kneeStatus === 'yellow' ? '🟡 GELB (Vorsicht!)' : '🔴 ROT (Pause!)'}
+Knie-Verlauf letzte Tage: ${kneeHistorySummary}
 
-TRAININGSPLAN WOCHE ${currentWeek} (${trainingDays[0]} - ${trainingDays[6]}):
-- Mo ${trainingDays[0]}: ${currentWeek <= 2 ? 'Ruhe' : '30 min locker'}
-- Di ${trainingDays[1]}: 30 min locker + 15 min Kraft (Beine)
-- Mi ${trainingDays[2]}: Ruhe / Mobility
-- Do ${trainingDays[3]}: 35 min locker
-- Fr ${trainingDays[4]}: Ruhe
-- Sa ${trainingDays[5]}: ${currentWeek <= 4 ? '40 min locker (Flach!)' : currentWeek === 5 ? '50 min mit Tempoeinheit' : '30 min locker'}
-- So ${trainingDays[6]}: Schwimmen/Rad 45 min
-- Wochenziel: ${currentWeek <= 2 ? '15-18' : currentWeek <= 4 ? '22-25' : currentWeek === 5 ? '28-32' : '15-20'} km
+📊 TRAININGSHISTORIE:
+Diese Woche bisher: ${thisWeekKm.toFixed(1)} km
+Letzte Aktivitäten:
+${activitiesSummary}
 
-KNIE-PROTOKOLL:
-- GRÜN: Plan wie vorgesehen
-- GELB: Tempo/Distanz reduzieren, Alternativtraining erwägen
-- ROT: Sofort stoppen, 2 Tage Pause, ggf. Arzt
+🎯 DEINE AUFGABE:
+1. Erstelle INDIVIDUELLE Trainingspläne basierend auf den ECHTEN Aktivitäten oben
+2. Passe SOFORT an den Knie-Status an:
+   - GRÜN: Normales Training möglich
+   - GELB: Reduziere Intensität/Umfang um 30-50%, empfehle Alternativen (Schwimmen, Rad)
+   - ROT: NUR Pause, Mobility, ggf. Arztbesuch empfehlen
+3. Berücksichtige die bisherige Belastung der Woche
+4. Sei realistisch: Nach VKB-Teilruptur ist Vorsicht wichtiger als Tempo
 
-${state.coachPersona ? `DEINE ROLLE: ${state.coachPersona}` : ''}
-
-DEIN VERHALTEN:
-- ${toneMap[state.tone] || toneMap['motivierend']}
-- Priorisiere IMMER die Gesundheit des Knies
-- Erinnere an Arztbesuch wenn relevant
-- Gib konkrete, umsetzbare Tipps
+KOMMUNIKATIONSSTIL:
+${toneMap[state.tone]}
 - Antworte auf Deutsch
-- Halte Antworten prägnant (max 3-4 Sätze, außer bei detaillierten Fragen)
-- Formatiere längere Antworten mit Markdown (Überschriften, Listen, **fett**)`;
-
-            return context;
+- Formatiere mit Markdown (### Überschriften, **fett**, Listen)
+- Halte Antworten kompakt aber hilfreich`;
         }
 
         // Update countdown
         function updateCountdown() {
-            const raceDate = new Date(state.raceDate);
-            const today = new Date();
-            const diffTime = raceDate - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            document.getElementById('countdown-days').textContent = diffDays;
-            document.getElementById('countdown-date').textContent = formatDate(raceDate);
-
-            // Update week info
-            const currentWeek = getWeekNumber();
-            document.getElementById('current-week').textContent = currentWeek;
-            document.getElementById('week-phase').textContent = getWeekPhase(currentWeek);
+            const daysUntilRace = getDaysUntilRace();
+            document.getElementById('countdown-days').textContent = daysUntilRace;
+            document.getElementById('countdown-date').textContent = formatDate(new Date(state.raceDate));
         }
 
         // Update knee display
         function updateKneeDisplay() {
             document.querySelectorAll('.knee-dot').forEach(dot => dot.classList.remove('active'));
-            document.getElementById(`knee-${state.kneeStatus}`).classList.add('active');
+            document.querySelector(`.knee-dot.${state.kneeStatus}`).classList.add('active');
 
             const infoMap = {
-                green: '✅ Alles OK - Training wie geplant',
+                green: '✅ Alles OK - Training möglich',
                 yellow: '⚠️ Vorsicht - Reduziertes Training empfohlen',
-                red: '🛑 Pause - Kein Training heute'
+                red: '🛑 Pause - Kein Lauftraining heute!'
             };
             document.getElementById('knee-info').textContent = infoMap[state.kneeStatus];
+        }
+
+        // Set knee status with history tracking
+        function setKneeStatus(status) {
+            const oldStatus = state.kneeStatus;
+            state.kneeStatus = status;
+            localStorage.setItem('kneeStatus', status);
+
+            // Save to history
+            const today = new Date().toISOString().split('T')[0];
+            const existingToday = state.kneeHistory.findIndex(k => k.date === today);
+            if (existingToday >= 0) {
+                state.kneeHistory[existingToday].status = status;
+            } else {
+                state.kneeHistory.push({ date: today, status });
+            }
+            localStorage.setItem('kneeHistory', JSON.stringify(state.kneeHistory.slice(-30)));
+
+            updateKneeDisplay();
+
+            // If status changed to yellow/red, offer advice
+            if (status !== 'green' && status !== oldStatus) {
+                showScreen('chat');
+                setTimeout(() => {
+                    const msg = status === 'yellow'
+                        ? 'Mein Knie fühlt sich heute nicht 100% an (gelb). Was empfiehlst du für heute?'
+                        : 'Mein Knie schmerzt heute (rot). Was soll ich tun?';
+                    askCoach(msg);
+                }, 300);
+            }
         }
 
         // Load messages
         function loadMessages() {
             const container = document.getElementById('chat-messages');
-            if (state.messages.length > 0) {
-                // Keep welcome message, add saved messages
-                state.messages.forEach(msg => {
-                    addMessageToUI(msg.role, msg.content, false);
-                });
+            container.innerHTML = '';
+
+            // Add welcome message if no messages
+            if (state.messages.length === 0) {
+                addMessageToUI('assistant', 'Hallo! 👋 Ich bin dein KI-Fitness-Coach. Ich erstelle dir einen individuellen Trainingsplan basierend auf deinen Strava-Aktivitäten und deinem aktuellen Knie-Status. Wie kann ich dir heute helfen?', false);
+            } else {
+                state.messages.forEach((msg, index) => addMessageToUI(msg.role, msg.content, false, index));
             }
         }
 
-        // Add message to UI
-        function addMessageToUI(role, content, save = true) {
+        // Add message to UI with delete button
+        function addMessageToUI(role, content, save = true, index = null) {
             const container = document.getElementById('chat-messages');
+            const wrapper = document.createElement('div');
+            wrapper.className = `message-container ${role}`;
+
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${role}`;
+            msgDiv.innerHTML = role === 'assistant' ? parseMarkdown(content) : escapeHtml(content);
+            wrapper.appendChild(msgDiv);
 
-            // Parse markdown for assistant messages
-            if (role === 'assistant') {
-                msgDiv.innerHTML = parseMarkdown(content);
-            } else {
-                msgDiv.textContent = content;
-            }
+            // Add delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'message-delete';
+            deleteBtn.textContent = 'Löschen';
+            const msgIndex = index !== null ? index : state.messages.length;
+            deleteBtn.onclick = () => deleteMessage(msgIndex);
+            wrapper.appendChild(deleteBtn);
 
-            container.appendChild(msgDiv);
+            container.appendChild(wrapper);
             container.scrollTop = container.scrollHeight;
 
             if (save) {
                 state.messages.push({ role, content });
-                localStorage.setItem('messages', JSON.stringify(state.messages.slice(-20))); // Keep last 20
+                localStorage.setItem('messages', JSON.stringify(state.messages.slice(-50)));
             }
         }
 
-        // Simple markdown parser
-        function parseMarkdown(text) {
-            // Escape HTML first
-            let html = text
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;');
+        // Delete single message
+        function deleteMessage(index) {
+            state.messages.splice(index, 1);
+            localStorage.setItem('messages', JSON.stringify(state.messages));
+            loadMessages();
+        }
 
-            // Headers
+        // Clear all chat history
+        function clearChatHistory() {
+            if (confirm('Möchtest du wirklich den gesamten Chat-Verlauf löschen?')) {
+                state.messages = [];
+                localStorage.setItem('messages', JSON.stringify([]));
+                loadMessages();
+                closeSettings();
+            }
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function parseMarkdown(text) {
+            let html = escapeHtml(text);
             html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
             html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
             html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-
-            // Bold
             html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-            // Italic
             html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-            // Code blocks
             html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-
-            // Inline code
             html = html.replace(/`(.*?)`/g, '<code>$1</code>');
-
-            // Lists
             html = html.replace(/^\- (.*$)/gim, '<li>$1</li>');
             html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-
-            // Paragraphs
             html = html.replace(/\n\n/g, '</p><p>');
             html = '<p>' + html + '</p>';
-            html = html.replace(/<p><\/p>/g, '');
-            html = html.replace(/<p>(<h[123]>)/g, '$1');
-            html = html.replace(/(<\/h[123]>)<\/p>/g, '$1');
-            html = html.replace(/<p>(<ul>)/g, '$1');
-            html = html.replace(/(<\/ul>)<\/p>/g, '$1');
-            html = html.replace(/<p>(<pre>)/g, '$1');
-            html = html.replace(/(<\/pre>)<\/p>/g, '$1');
-
+            html = html.replace(/<p><\/p>/g, '').replace(/<p>(<h[123]>)/g, '$1').replace(/(<\/h[123]>)<\/p>/g, '$1');
+            html = html.replace(/<p>(<ul>)/g, '$1').replace(/(<\/ul>)<\/p>/g, '$1');
             return html;
         }
 
-        // Show typing indicator
         function showTypingIndicator() {
             const container = document.getElementById('chat-messages');
             const indicator = document.createElement('div');
@@ -1542,13 +1080,12 @@ DEIN VERHALTEN:
             container.scrollTop = container.scrollHeight;
         }
 
-        // Hide typing indicator
         function hideTypingIndicator() {
             const indicator = document.getElementById('typing');
             if (indicator) indicator.remove();
         }
 
-        // Send message
+        // Send message to Claude
         async function sendMessage() {
             const input = document.getElementById('chat-input');
             const message = input.value.trim();
@@ -1566,8 +1103,6 @@ DEIN VERHALTEN:
             showTypingIndicator();
 
             try {
-                const trainingContext = generateTrainingContext();
-
                 const response = await fetch('https://api.anthropic.com/v1/messages', {
                     method: 'POST',
                     headers: {
@@ -1579,7 +1114,7 @@ DEIN VERHALTEN:
                     body: JSON.stringify({
                         model: 'claude-sonnet-4-20250514',
                         max_tokens: 1024,
-                        system: trainingContext,
+                        system: generateTrainingContext(),
                         messages: [
                             ...state.messages.slice(-10).map(m => ({
                                 role: m.role === 'assistant' ? 'assistant' : 'user',
@@ -1592,35 +1127,60 @@ DEIN VERHALTEN:
 
                 hideTypingIndicator();
 
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
                 const data = await response.json();
-                const assistantMessage = data.content[0].text;
-                addMessageToUI('assistant', assistantMessage);
-
+                addMessageToUI('assistant', data.content[0].text);
             } catch (error) {
                 hideTypingIndicator();
-                console.error('Error:', error);
-                addMessageToUI('assistant', `Fehler: ${error.message}. Bitte überprüfe deinen API Key.`);
+                addMessageToUI('assistant', `Fehler: ${error.message}`);
             }
         }
 
-        // Analyze meal with AI
-        async function analyzeMeal() {
+        // Nutrition Date Navigation
+        function changeNutritionDate(delta) {
+            const current = new Date(state.currentNutritionDate);
+            current.setDate(current.getDate() + delta);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Don't allow future dates
+            if (current > today) return;
+
+            state.currentNutritionDate = current.toISOString().split('T')[0];
+            updateNutritionDisplay();
+        }
+
+        function goToNutritionToday() {
+            state.currentNutritionDate = new Date().toISOString().split('T')[0];
+            updateNutritionDisplay();
+        }
+
+        // Auto-analyze meal (like Yazio - in background)
+        let mealAnalysisTimeout = null;
+
+        function handleMealKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                triggerMealAnalysis();
+            }
+        }
+
+        function handleMealBlur() {
+            const input = document.getElementById('meal-input');
+            if (input.value.trim()) {
+                mealAnalysisTimeout = setTimeout(() => triggerMealAnalysis(), 500);
+            }
+        }
+
+        async function triggerMealAnalysis() {
+            clearTimeout(mealAnalysisTimeout);
             const input = document.getElementById('meal-input');
             const mealText = input.value.trim();
-            if (!mealText) return;
+            if (!mealText || !state.apiKey) return;
 
-            if (!state.apiKey) {
-                alert('Bitte gib zuerst deinen Claude API Key in den Einstellungen ein.');
-                return;
-            }
-
-            const btn = document.querySelector('.analyze-btn');
-            btn.textContent = 'Analysiere...';
-            btn.disabled = true;
+            const indicator = document.getElementById('analyzing-indicator');
+            indicator.classList.remove('hidden');
 
             try {
                 const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -1633,11 +1193,9 @@ DEIN VERHALTEN:
                     },
                     body: JSON.stringify({
                         model: 'claude-sonnet-4-20250514',
-                        max_tokens: 500,
-                        system: 'Du bist ein Ernährungsexperte. Analysiere die Mahlzeit und gib die Nährwerte zurück. Antworte NUR mit JSON in diesem Format: {"name": "Kurze Beschreibung", "kcal": Zahl, "protein": Zahl, "carbs": Zahl, "fat": Zahl}. Schätze realistisch basierend auf typischen Portionsgrößen.',
-                        messages: [
-                            { role: 'user', content: mealText }
-                        ]
+                        max_tokens: 300,
+                        system: 'Du bist ein Ernährungsexperte. Analysiere die Mahlzeit und antworte NUR mit JSON: {"name": "Kurzbeschreibung max 30 Zeichen", "kcal": Zahl, "protein": Zahl, "carbs": Zahl, "fat": Zahl}. Schätze realistisch basierend auf deutschen Portionsgrößen.',
+                        messages: [{ role: 'user', content: mealText }]
                     })
                 });
 
@@ -1645,31 +1203,44 @@ DEIN VERHALTEN:
 
                 const data = await response.json();
                 const jsonMatch = data.content[0].text.match(/\{[\s\S]*\}/);
+
                 if (jsonMatch) {
                     const mealData = JSON.parse(jsonMatch[0]);
                     mealData.time = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-                    mealData.date = new Date().toISOString().split('T')[0];
+                    mealData.id = Date.now();
+                    mealData.original = mealText;
 
-                    state.meals.push(mealData);
-                    localStorage.setItem('meals', JSON.stringify(state.meals));
+                    // Save to current date
+                    const meals = getMealsForDate(state.currentNutritionDate);
+                    meals.push(mealData);
+                    saveMealsForDate(state.currentNutritionDate, meals);
 
                     input.value = '';
                     updateNutritionDisplay();
                 }
-
             } catch (error) {
-                console.error('Error:', error);
-                alert('Fehler bei der Analyse. Bitte versuche es erneut.');
+                console.error('Meal analysis error:', error);
             }
 
-            btn.textContent = 'Mit KI analysieren';
-            btn.disabled = false;
+            indicator.classList.add('hidden');
         }
 
         // Update nutrition display
         function updateNutritionDisplay() {
             const today = new Date().toISOString().split('T')[0];
-            const todaysMeals = state.meals.filter(m => m.date === today);
+            const isToday = state.currentNutritionDate === today;
+            const displayDate = new Date(state.currentNutritionDate);
+
+            // Update date nav
+            const dateLabel = isToday ? 'Heute' : formatShortDate(displayDate) + ' ' + ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'][displayDate.getDay()];
+            document.getElementById('nutrition-date').textContent = dateLabel;
+            document.getElementById('date-nav-next').disabled = isToday;
+
+            // Show/hide meal input (only for today)
+            document.getElementById('meal-input-card').style.display = isToday ? 'block' : 'none';
+            document.getElementById('meals-title').textContent = isToday ? 'Heute gegessen' : `${formatShortDate(displayDate)} gegessen`;
+
+            const todaysMeals = getMealsForDate(state.currentNutritionDate);
 
             const totals = todaysMeals.reduce((acc, meal) => ({
                 kcal: acc.kcal + (meal.kcal || 0),
@@ -1678,42 +1249,38 @@ DEIN VERHALTEN:
                 fat: acc.fat + (meal.fat || 0)
             }), { kcal: 0, protein: 0, carbs: 0, fat: 0 });
 
-            // Get activity calories (simplified - could be enhanced with Strava data)
-            const todaysActivities = state.activities.filter(a => a.date === today);
-            const activityKcal = todaysActivities.reduce((sum, a) => sum + (a.duration * 8), 0); // ~8 kcal/min estimate
+            // Activity calories from today's workouts
+            const todaysActivities = state.activities.filter(a => a.date === state.currentNutritionDate);
+            const activityKcal = todaysActivities.reduce((sum, a) => sum + (a.duration * 8), 0);
 
             const remaining = state.calorieGoal + activityKcal - totals.kcal;
 
-            // Update display
             document.getElementById('calories-remaining').textContent = Math.max(0, remaining);
             document.getElementById('calories-base').textContent = state.calorieGoal;
             document.getElementById('calories-activity').textContent = `+${activityKcal}`;
             document.getElementById('calories-food').textContent = `-${totals.kcal}`;
 
-            // Update progress ring
             const progress = Math.min(totals.kcal / (state.calorieGoal + activityKcal), 1);
-            const circumference = 408; // 2 * PI * 65
-            document.getElementById('calorie-progress').style.strokeDashoffset = circumference * (1 - progress);
+            document.getElementById('calorie-progress').style.strokeDashoffset = 408 * (1 - progress);
 
-            // Update macros
-            const proteinGoal = 120, carbsGoal = 250, fatGoal = 70;
+            const proteinGoal = getProteinGoal();
+            const carbsGoal = 250, fatGoal = 70;
             document.getElementById('protein-bar').style.width = `${Math.min(totals.protein / proteinGoal * 100, 100)}%`;
             document.getElementById('carbs-bar').style.width = `${Math.min(totals.carbs / carbsGoal * 100, 100)}%`;
             document.getElementById('fat-bar').style.width = `${Math.min(totals.fat / fatGoal * 100, 100)}%`;
-            document.getElementById('protein-value').textContent = `${totals.protein}/${proteinGoal}g`;
-            document.getElementById('carbs-value').textContent = `${totals.carbs}/${carbsGoal}g`;
-            document.getElementById('fat-value').textContent = `${totals.fat}/${fatGoal}g`;
+            document.getElementById('protein-value').textContent = `${Math.round(totals.protein)}/${proteinGoal}g`;
+            document.getElementById('carbs-value').textContent = `${Math.round(totals.carbs)}/${carbsGoal}g`;
+            document.getElementById('fat-value').textContent = `${Math.round(totals.fat)}/${fatGoal}g`;
 
-            // Update meals list
             const mealsContainer = document.getElementById('meals-today');
             if (todaysMeals.length === 0) {
-                mealsContainer.innerHTML = '<div class="empty-state" style="padding: 1rem;"><p style="font-size: 0.875rem; color: var(--text-secondary);">Noch nichts eingetragen</p></div>';
+                mealsContainer.innerHTML = '<div style="text-align: center; padding: 1rem; color: var(--text-secondary); font-size: 0.875rem;">Noch nichts eingetragen</div>';
             } else {
                 mealsContainer.innerHTML = todaysMeals.map(meal => `
                     <div class="meal-item">
                         <div class="meal-info">
                             <div class="meal-name">${meal.name}</div>
-                            <div class="meal-time">${meal.time}</div>
+                            <div class="meal-time">${meal.time} · P: ${meal.protein}g · K: ${meal.carbs}g · F: ${meal.fat}g</div>
                         </div>
                         <div class="meal-kcal">${meal.kcal} kcal</div>
                     </div>
@@ -1721,7 +1288,7 @@ DEIN VERHALTEN:
             }
         }
 
-        // Handle keyboard input
+        // Navigation & UI
         function handleKeyDown(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
@@ -1729,26 +1296,25 @@ DEIN VERHALTEN:
             }
         }
 
-        // Show screen
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-
             document.getElementById(`screen-${screenId}`).classList.add('active');
             document.getElementById(`nav-${screenId}`).classList.add('active');
 
             if (screenId === 'nutrition') {
+                // Reset to today when opening nutrition
+                state.currentNutritionDate = new Date().toISOString().split('T')[0];
                 updateNutritionDisplay();
             }
+            if (screenId === 'training') updateActivitiesList();
         }
 
-        // Ask coach
         function askCoach(question) {
             document.getElementById('chat-input').value = question;
             sendMessage();
         }
 
-        // Splash screen
         function hideSplash() {
             document.getElementById('splash').classList.add('hidden');
             state.hasSeenSplash = true;
@@ -1760,10 +1326,10 @@ DEIN VERHALTEN:
             document.getElementById('api-key-input').value = state.apiKey;
             document.getElementById('goal-time-input').value = state.goalTime;
             document.getElementById('race-date-input').value = state.raceDate;
-            document.getElementById('coach-persona-input').value = state.coachPersona;
             document.getElementById('user-context-input').value = state.userContext;
             document.getElementById('tone-select').value = state.tone;
             document.getElementById('calorie-goal-input').value = state.calorieGoal;
+            document.getElementById('weight-input').value = state.weight;
             document.getElementById('settings-modal').classList.add('active');
         }
 
@@ -1775,26 +1341,33 @@ DEIN VERHALTEN:
             state.apiKey = document.getElementById('api-key-input').value;
             state.goalTime = document.getElementById('goal-time-input').value;
             state.raceDate = document.getElementById('race-date-input').value;
-            state.coachPersona = document.getElementById('coach-persona-input').value;
             state.userContext = document.getElementById('user-context-input').value;
             state.tone = document.getElementById('tone-select').value;
             state.calorieGoal = parseInt(document.getElementById('calorie-goal-input').value) || 2100;
+            state.weight = parseFloat(document.getElementById('weight-input').value) || 87.5;
 
             localStorage.setItem('apiKey', state.apiKey);
             localStorage.setItem('goalTime', state.goalTime);
             localStorage.setItem('raceDate', state.raceDate);
-            localStorage.setItem('coachPersona', state.coachPersona);
             localStorage.setItem('userContext', state.userContext);
             localStorage.setItem('tone', state.tone);
             localStorage.setItem('calorieGoal', state.calorieGoal);
+            localStorage.setItem('weight', state.weight);
 
             updateCountdown();
+            updateNutritionDisplay();
             closeSettings();
+        }
+
+        // Strava (placeholder - needs OAuth implementation)
+        function connectStrava() {
+            alert('Strava-Verbindung wird im nächsten Schritt implementiert!\n\nDafür brauchen wir:\n1. Strava API App erstellen\n2. OAuth Flow einrichten\n3. Backend für Token-Handling');
         }
 
         // Activity Modal
         function openActivityModal() {
             document.getElementById('activity-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('activity-knee').value = state.kneeStatus;
             document.getElementById('activity-modal').classList.add('active');
         }
 
@@ -1808,6 +1381,7 @@ DEIN VERHALTEN:
                 date: document.getElementById('activity-date').value,
                 distance: parseFloat(document.getElementById('activity-distance').value) || 0,
                 duration: parseInt(document.getElementById('activity-duration').value) || 0,
+                kneeStatus: document.getElementById('activity-knee').value,
                 notes: document.getElementById('activity-notes').value,
                 id: Date.now()
             };
@@ -1820,125 +1394,76 @@ DEIN VERHALTEN:
             closeActivityModal();
         }
 
-        // Update activities list
         function updateActivitiesList() {
             const container = document.getElementById('activities-list');
+            const allActivities = [...state.activities, ...state.stravaActivities]
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            if (state.activities.length === 0) {
+            if (allActivities.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">🏃</div>
                         <p>Noch keine Aktivitäten</p>
                         <p style="font-size: 0.875rem; margin-top: 0.5rem;">Verbinde Strava oder füge manuell hinzu</p>
-                    </div>
-                `;
+                        <button class="strava-connect" onclick="connectStrava()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>
+                            Mit Strava verbinden
+                        </button>
+                    </div>`;
                 return;
             }
 
-            const typeIcons = {
-                run: '🏃',
-                bike: '🚴',
-                swim: '🏊',
-                strength: '💪',
-                mobility: '🧘'
-            };
+            const typeIcons = { run: '🏃', bike: '🚴', swim: '🏊', strength: '💪', mobility: '🧘' };
+            const typeNames = { run: 'Lauf', bike: 'Radfahren', swim: 'Schwimmen', strength: 'Krafttraining', mobility: 'Mobility' };
+            const kneeIcons = { green: '🟢', yellow: '🟡', red: '🔴' };
 
-            const typeNames = {
-                run: 'Lauf',
-                bike: 'Radfahren',
-                swim: 'Schwimmen',
-                strength: 'Krafttraining',
-                mobility: 'Mobility'
-            };
-
-            container.innerHTML = state.activities.map(a => `
+            container.innerHTML = allActivities.slice(0, 20).map(a => `
                 <div class="activity-card">
                     <div class="activity-header">
                         <div class="activity-type">
                             <span class="activity-icon">${typeIcons[a.type] || '🏃'}</span>
                             <span class="activity-name">${typeNames[a.type] || a.type}</span>
+                            ${a.kneeStatus ? `<span>${kneeIcons[a.kneeStatus] || ''}</span>` : ''}
                         </div>
                         <div class="activity-date">${new Date(a.date).toLocaleDateString('de-DE')}</div>
                     </div>
                     <div class="activity-stats">
                         ${a.distance ? `<span class="activity-stat">📏 ${a.distance} km</span>` : ''}
                         ${a.duration ? `<span class="activity-stat">⏱️ ${a.duration} min</span>` : ''}
+                        ${a.source === 'strava' ? '<span class="activity-stat" style="color: #fc4c02;">Strava</span>' : ''}
                     </div>
                 </div>
             `).join('');
         }
 
-        // Update week stats
         function updateWeekStats() {
             const today = new Date();
             const weekStart = new Date(today);
             weekStart.setDate(today.getDate() - today.getDay() + 1);
             weekStart.setHours(0, 0, 0, 0);
 
-            const weekActivities = state.activities.filter(a => {
-                const date = new Date(a.date);
-                return date >= weekStart && a.type === 'run';
-            });
-
+            const allActivities = [...state.activities, ...state.stravaActivities];
+            const weekActivities = allActivities.filter(a => new Date(a.date) >= weekStart && a.type === 'run');
             const weekKm = weekActivities.reduce((sum, a) => sum + (a.distance || 0), 0);
+
             document.getElementById('week-km').innerHTML = `${weekKm.toFixed(1)} <span class="stat-unit">km</span>`;
+
+            // Last 4 weeks average
+            const fourWeeksAgo = new Date(today);
+            fourWeeksAgo.setDate(today.getDate() - 28);
+            const monthActivities = allActivities.filter(a => new Date(a.date) >= fourWeeksAgo && a.type === 'run');
+            const monthKm = monthActivities.reduce((sum, a) => sum + (a.distance || 0), 0);
+            document.getElementById('month-km').innerHTML = `${(monthKm / 4).toFixed(1)} <span class="stat-unit">km/W</span>`;
         }
 
-        // Knee status
-        function logKneeStatus() {
-            document.getElementById('knee-modal').classList.add('active');
-        }
-
-        function closeKneeModal() {
-            document.getElementById('knee-modal').classList.remove('active');
-        }
-
-        function selectKneeOption(status) {
-            state.selectedKnee = status;
-            document.querySelectorAll('.knee-option').forEach(opt => opt.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-        }
-
-        function confirmKneeStatus() {
-            if (state.selectedKnee) {
-                setKneeStatus(state.selectedKnee, true);
-            }
-            closeKneeModal();
-        }
-
-        function setKneeStatus(status, closeModal = true) {
-            state.kneeStatus = status;
-            localStorage.setItem('kneeStatus', status);
-            updateKneeDisplay();
-
-            if (closeModal) {
-                closeKneeModal();
-            }
-
-            // Give feedback based on status
-            if (status === 'red') {
-                showScreen('chat');
-                setTimeout(() => {
-                    askCoach('Mein Knie schmerzt heute (rot). Was soll ich tun?');
-                }, 300);
-            } else if (status === 'yellow') {
-                showScreen('chat');
-                setTimeout(() => {
-                    askCoach('Mein Knie fühlt sich heute etwas komisch an (gelb). Soll ich trotzdem trainieren?');
-                }, 300);
-            }
-        }
-
-        // Service Worker Registration
+        // Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW:', err));
         }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            if (state.hasSeenSplash) {
-                document.getElementById('splash').classList.add('hidden');
-            }
+            if (state.hasSeenSplash) document.getElementById('splash').classList.add('hidden');
             updateCountdown();
             updateKneeDisplay();
             loadMessages();
@@ -1946,7 +1471,6 @@ DEIN VERHALTEN:
             updateWeekStats();
             updateNutritionDisplay();
 
-            // Auto-resize textarea
             const input = document.getElementById('chat-input');
             input.addEventListener('input', () => {
                 input.style.height = 'auto';
