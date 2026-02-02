@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Fitness Coach">
+    <meta name="theme-color" content="#1a202c">
+    <title>Fitness Coach AI</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #1a202c;
+            --bg-secondary: #2d3748;
+            --bg-tertiary: #4a5568;
+            --text-primary: #f7fafc;
+            --text-secondary: #a0aec0;
+            --accent: #ed8936;
+            --accent-light: #fbd38d;
+            --success: #48bb78;
+            --warning: #ecc94b;
+            --danger: #fc8181;
+            --safe-area-top: env(safe-area-inset-top, 20px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 20px);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            overflow: hidden;
+        }
+
+        html {
+            height: -webkit-fill-available;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            height: -webkit-fill-available;
+            padding-top: var(--safe-area-top);
+            padding-bottom: var(--safe-area-bottom);
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            justify-content: space-around;
+            background: var(--bg-secondary);
+            padding: 12px 0;
+            border-top: 1px solid var(--bg-tertiary);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding-bottom: calc(12px + var(--safe-area-bottom));
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 11px;
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--accent);
+            background: rgba(237, 137, 54, 0.1);
+        }
+
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .settings-btn {
+            background: var(--bg-tertiary);
+            border: none;
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Main Content Area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 80px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            height: 100%;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Chat Screen */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 15px;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            background: var(--accent);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant {
+            background: var(--bg-secondary);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.system {
+            background: var(--bg-tertiary);
+            align-self: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 8px 16px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border-radius: 18px;
+            align-self: flex-start;
+            width: fit-content;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        .chat-input-container {
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--bg-tertiary);
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: 20px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 16px;
+            resize: none;
+            max-height: 120px;
+            min-height: 44px;
+            line-height: 1.4;
+        }
+
+        .chat-input:focus {
+            outline: 2px solid var(--accent);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .send-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+
+        .send-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        /* Dashboard Screen */
+        .dashboard {
+            padding: 16px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .stat-card.wide {
+            grid-column: span 2;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-value.small {
+            font-size: 20px;
+        }
+
+        .stat-unit {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .stat-trend {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .stat-trend.up { color: var(--success); }
+        .stat-trend.down { color: var(--danger); }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 20px 0 12px 0;
+        }
+
+        .week-overview {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .week-days {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .week-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .week-day-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .week-day-indicator {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .week-day-indicator.completed {
+            background: var(--success);
+            color: white;
+        }
+
+        .week-day-indicator.today {
+            border: 2px solid var(--accent);
+        }
+
+        .week-day-indicator.rest {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        /* Training Screen */
+        .training {
+            padding: 16px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .training-card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .training-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .training-type {
+            font-size: 12px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .training-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .training-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .training-stats {
+            display: flex;
+            gap: 24px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--bg-tertiary);
+        }
+
+        .training-stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .training-stat-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .training-stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .knee-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .knee-status.green {
+            background: rgba(72, 187, 120, 0.2);
+            color: var(--success);
+        }
+
+        .knee-status.yellow {
+            background: rgba(236, 201, 75, 0.2);
+            color: var(--warning);
+        }
+
+        .knee-status.red {
+            background: rgba(252, 129, 129, 0.2);
+            color: var(--danger);
+        }
+
+        /* Add Activity Button */
+        .fab {
+            position: fixed;
+            right: 20px;
+            bottom: 100px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(237, 137, 54, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        /* Settings Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .modal-content {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .form-input:focus {
+            outline: 2px solid var(--accent);
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            margin-top: 10px;
+        }
+
+        /* Countdown */
+        .countdown-card {
+            background: linear-gradient(135deg, var(--accent), #dd6b20);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .countdown-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .countdown-value {
+            font-size: 48px;
+            font-weight: 700;
+        }
+
+        .countdown-event {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .quick-action {
+            flex: 1;
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: 12px;
+            padding: 16px 12px;
+            color: var(--text-primary);
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-action svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--accent);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Splash / Onboarding */
+        .splash {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .splash.hidden {
+            display: none;
+        }
+
+        .splash-logo {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .splash-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .splash-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .splash .btn {
+            max-width: 280px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div class="splash" id="splash">
+        <div class="splash-logo">🏃‍♂️</div>
+        <h1 class="splash-title">Fitness Coach AI</h1>
+        <p class="splash-subtitle">Dein persönlicher KI-Trainingsberater für den Halbmarathon Madrid</p>
+        <button class="btn btn-primary" onclick="startApp()">Los geht's</button>
+    </div>
+
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div>
+                <h1>🏃 Fitness Coach</h1>
+                <div class="header-subtitle">Halbmarathon Madrid · 22.03.2026</div>
+            </div>
+            <button class="settings-btn" onclick="openSettings()">⚙️</button>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Chat Screen -->
+            <div class="screen active" id="screen-chat">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message system">
+                        Willkommen! Ich bin dein KI-Fitness-Coach. Frag mich alles über dein Training, deine Ernährung oder deinen Trainingsplan.
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <textarea
+                        class="chat-input"
+                        id="chat-input"
+                        placeholder="Frag mich etwas..."
+                        rows="1"
+                        onkeydown="handleKeyDown(event)"
+                    ></textarea>
+                    <button class="send-btn" onclick="sendMessage()">
+                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Screen -->
+            <div class="screen" id="screen-dashboard">
+                <div class="dashboard">
+                    <!-- Countdown -->
+                    <div class="countdown-card">
+                        <div class="countdown-label">Tage bis Madrid</div>
+                        <div class="countdown-value" id="countdown-days">49</div>
+                        <div class="countdown-event">🇪🇸 Halbmarathon Madrid</div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <button class="quick-action" onclick="logKneeStatus()">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Knie-Check
+                        </button>
+                        <button class="quick-action" onclick="showScreen('chat'); askCoach('Was steht heute auf dem Plan?')">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            Tagesplan
+                        </button>
+                        <button class="quick-action" onclick="showScreen('chat'); askCoach('Wie sollte ich mich heute ernähren?')">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            Ernährung
+                        </button>
+                    </div>
+
+                    <!-- Week Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Diese Woche</div>
+                            <div class="stat-value" id="week-km">0 <span class="stat-unit">km</span></div>
+                            <div class="stat-trend up" id="week-trend">Ziel: 22-25 km</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Trainingsphase</div>
+                            <div class="stat-value small">Aufbau I</div>
+                            <div class="stat-trend">Woche 1 von 7</div>
+                        </div>
+                        <div class="stat-card wide">
+                            <div class="stat-label">Knie-Status heute</div>
+                            <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+                                <span class="knee-status green" id="knee-status">✓ Grün – Alles OK</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Week Overview -->
+                    <h3 class="section-title">Wochenübersicht</h3>
+                    <div class="week-overview">
+                        <div class="week-days">
+                            <div class="week-day">
+                                <span class="week-day-label">Mo</span>
+                                <div class="week-day-indicator rest">R</div>
+                            </div>
+                            <div class="week-day">
+                                <span class="week-day-label">Di</span>
+                                <div class="week-day-indicator">🏃</div>
+                            </div>
+                            <div class="week-day">
+                                <span class="week-day-label">Mi</span>
+                                <div class="week-day-indicator rest">R</div>
+                            </div>
+                            <div class="week-day">
+                                <span class="week-day-label">Do</span>
+                                <div class="week-day-indicator">🏃</div>
+                            </div>
+                            <div class="week-day">
+                                <span class="week-day-label">Fr</span>
+                                <div class="week-day-indicator rest">R</div>
+                            </div>
+                            <div class="week-day">
+                                <span class="week-day-label">Sa</span>
+                                <div class="week-day-indicator today">🏃</div>
+                            </div>
+                            <div class="week-day">
+                                <span class="week-day-label">So</span>
+                                <div class="week-day-indicator">🚴</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 13px; color: var(--text-secondary);">
+                            Heute: Samstag – 40 min locker (Flach!)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Log Screen -->
+            <div class="screen" id="screen-training">
+                <div class="training">
+                    <h3 class="section-title">Letzte Aktivitäten</h3>
+
+                    <div class="training-card">
+                        <div class="training-card-header">
+                            <div>
+                                <div class="training-type">Lauf</div>
+                                <div class="training-title">Erster Comeback-Lauf</div>
+                            </div>
+                            <span class="knee-status yellow">⚠️ Gelb</span>
+                        </div>
+                        <div class="training-date">Vor 3 Tagen</div>
+                        <div class="training-stats">
+                            <div class="training-stat">
+                                <span class="training-stat-value">7.0 km</span>
+                                <span class="training-stat-label">Distanz</span>
+                            </div>
+                            <div class="training-stat">
+                                <span class="training-stat-value">42:00</span>
+                                <span class="training-stat-label">Zeit</span>
+                            </div>
+                            <div class="training-stat">
+                                <span class="training-stat-value">6:00</span>
+                                <span class="training-stat-label">Pace</span>
+                            </div>
+                            <div class="training-stat">
+                                <span class="training-stat-value">145</span>
+                                <span class="training-stat-label">Ø HR</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="empty-state" id="empty-training" style="display: none;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        <p>Noch keine Aktivitäten</p>
+                        <p style="font-size: 13px; margin-top: 8px;">Verbinde Strava oder logge manuell</p>
+                    </div>
+                </div>
+                <button class="fab" onclick="openAddActivity()">+</button>
+            </div>
+        </main>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <div class="nav-item active" onclick="showScreen('chat')" id="nav-chat">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                Chat
+            </div>
+            <div class="nav-item" onclick="showScreen('dashboard')" id="nav-dashboard">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+                Dashboard
+            </div>
+            <div class="nav-item" onclick="showScreen('training')" id="nav-training">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Training
+            </div>
+        </nav>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Einstellungen</h2>
+                <button class="modal-close" onclick="closeSettings()">×</button>
+            </div>
+            <div class="modal-content">
+                <div class="form-group">
+                    <label class="form-label">Claude API Key</label>
+                    <input type="password" class="form-input" id="api-key-input" placeholder="sk-ant-...">
+                    <p class="form-hint">Hol dir deinen Key auf console.anthropic.com</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Zielzeit Halbmarathon</label>
+                    <input type="text" class="form-input" id="goal-time-input" placeholder="1:59:59" value="1:59:59">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Renndatum</label>
+                    <input type="date" class="form-input" id="race-date-input" value="2026-03-22">
+                </div>
+                <button class="btn btn-primary" onclick="saveSettings()">Speichern</button>
+                <button class="btn btn-secondary" onclick="closeSettings()">Abbrechen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Activity Modal -->
+    <div class="modal-overlay" id="activity-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Aktivität hinzufügen</h2>
+                <button class="modal-close" onclick="closeActivityModal()">×</button>
+            </div>
+            <div class="modal-content">
+                <div class="form-group">
+                    <label class="form-label">Aktivitätstyp</label>
+                    <select class="form-input" id="activity-type">
+                        <option value="run">🏃 Lauf</option>
+                        <option value="bike">🚴 Radfahren</option>
+                        <option value="swim">🏊 Schwimmen</option>
+                        <option value="strength">💪 Kraft</option>
+                        <option value="rest">😴 Ruhetag</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Distanz (km)</label>
+                    <input type="number" class="form-input" id="activity-distance" placeholder="0.0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dauer (Minuten)</label>
+                    <input type="number" class="form-input" id="activity-duration" placeholder="30">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Knie-Status</label>
+                    <select class="form-input" id="activity-knee">
+                        <option value="green">🟢 Grün – Alles OK</option>
+                        <option value="yellow">🟡 Gelb – Leichte Beschwerden</option>
+                        <option value="red">🔴 Rot – Schmerzen/Stop</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notizen</label>
+                    <textarea class="form-input" id="activity-notes" rows="2" placeholder="Wie hast du dich gefühlt?"></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="saveActivity()">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Knee Check Modal -->
+    <div class="modal-overlay" id="knee-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Knie-Check</h2>
+                <button class="modal-close" onclick="closeKneeModal()">×</button>
+            </div>
+            <div class="modal-content">
+                <p style="margin-bottom: 20px; color: var(--text-secondary);">Wie fühlt sich dein Knie gerade an?</p>
+                <button class="btn" style="background: var(--success); margin-bottom: 10px;" onclick="setKneeStatus('green')">
+                    🟢 Grün – Keine Beschwerden
+                </button>
+                <button class="btn" style="background: var(--warning); color: #1a202c; margin-bottom: 10px;" onclick="setKneeStatus('yellow')">
+                    🟡 Gelb – Leichtes Ziehen
+                </button>
+                <button class="btn" style="background: var(--danger);" onclick="setKneeStatus('red')">
+                    🔴 Rot – Schmerz/Instabilität
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // App State
+        const state = {
+            apiKey: localStorage.getItem('apiKey') || '',
+            goalTime: localStorage.getItem('goalTime') || '1:59:59',
+            raceDate: localStorage.getItem('raceDate') || '2026-03-22',
+            activities: JSON.parse(localStorage.getItem('activities') || '[]'),
+            kneeStatus: localStorage.getItem('kneeStatus') || 'green',
+            messages: JSON.parse(localStorage.getItem('messages') || '[]'),
+            hasSeenSplash: localStorage.getItem('hasSeenSplash') === 'true'
+        };
+
+        // Training Plan Context
+        const trainingContext = `
+Du bist ein KI-Fitness-Coach für Fabian, der sich auf seinen Halbmarathon in Madrid am 22. März 2026 vorbereitet.
+
+WICHTIGE INFOS ÜBER FABIAN:
+- Hat eine Teilruptur am vorderen Kreuzband (VKB) und war 3 Monate pausiert
+- Ist seit 2-4 Wochen wieder im Training
+- Erster Comeback-Lauf: 7 km mit leichten Beschwerden (Kniebandage)
+- Vor der Verletzung: Hobby-Läufer (15-30 km/Woche)
+- Ziel: Sub 2:00h (ambitioniert, realistischer wäre 2:10-2:20)
+- Verwendet: Garmin Forerunner 255, Strava, Fitbod
+
+AKTUELLER STATUS:
+- Wochen bis Rennen: ${Math.ceil((new Date(state.raceDate) - new Date()) / (7 * 24 * 60 * 60 * 1000))}
+- Knie-Status heute: ${state.kneeStatus === 'green' ? 'Grün (OK)' : state.kneeStatus === 'yellow' ? 'Gelb (Vorsicht)' : 'Rot (Pause!)'}
+
+TRAININGSPLAN WOCHE 1 (Aufbau I):
+- Mo: Ruhe
+- Di: 30 min locker + 15 min Kraft (Beine)
+- Mi: Ruhe / Mobility
+- Do: 35 min locker
+- Fr: Ruhe
+- Sa: 40 min locker (Flach!)
+- So: Schwimmen/Rad 45 min
+- Wochenziel: 15-18 km
+
+KNIE-PROTOKOLL:
+- GRÜN: Plan wie vorgesehen
+- GELB: Tempo/Distanz reduzieren, Alternativtraining erwägen
+- ROT: Sofort stoppen, 2 Tage Pause, ggf. Arzt
+
+DEIN VERHALTEN:
+- Sei motivierend aber realistisch
+- Priorisiere IMMER die Gesundheit des Knies
+- Erinnere an Arztbesuch wenn relevant
+- Gib konkrete, umsetzbare Tipps
+- Antworte auf Deutsch
+- Halte Antworten prägnant (max 3-4 Sätze, außer bei detaillierten Fragen)
+`;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            if (state.hasSeenSplash) {
+                document.getElementById('splash').classList.add('hidden');
+            }
+            updateCountdown();
+            updateKneeDisplay();
+            loadMessages();
+
+            // Auto-resize textarea
+            const input = document.getElementById('chat-input');
+            input.addEventListener('input', () => {
+                input.style.height = 'auto';
+                input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+            });
+        });
+
+        function startApp() {
+            document.getElementById('splash').classList.add('hidden');
+            localStorage.setItem('hasSeenSplash', 'true');
+            state.hasSeenSplash = true;
+        }
+
+        function showScreen(screen) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(`screen-${screen}`).classList.add('active');
+            document.getElementById(`nav-${screen}`).classList.add('active');
+        }
+
+        function updateCountdown() {
+            const raceDate = new Date(state.raceDate);
+            const today = new Date();
+            const days = Math.ceil((raceDate - today) / (24 * 60 * 60 * 1000));
+            document.getElementById('countdown-days').textContent = days;
+        }
+
+        function updateKneeDisplay() {
+            const statusEl = document.getElementById('knee-status');
+            const statusMap = {
+                green: { class: 'green', text: '✓ Grün – Alles OK' },
+                yellow: { class: 'yellow', text: '⚠️ Gelb – Vorsicht' },
+                red: { class: 'red', text: '⚠ Rot – Pause!' }
+            };
+            const status = statusMap[state.kneeStatus];
+            statusEl.className = `knee-status ${status.class}`;
+            statusEl.textContent = status.text;
+        }
+
+        // Chat Functions
+        function loadMessages() {
+            const container = document.getElementById('chat-messages');
+            if (state.messages.length > 0) {
+                // Keep welcome message, add saved messages
+                state.messages.forEach(msg => {
+                    addMessageToUI(msg.role, msg.content, false);
+                });
+            }
+        }
+
+        function addMessageToUI(role, content, save = true) {
+            const container = document.getElementById('chat-messages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${role}`;
+            msgDiv.textContent = content;
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+
+            if (save) {
+                state.messages.push({ role, content });
+                localStorage.setItem('messages', JSON.stringify(state.messages.slice(-20))); // Keep last 20
+            }
+        }
+
+        function showTypingIndicator() {
+            const container = document.getElementById('chat-messages');
+            const indicator = document.createElement('div');
+            indicator.className = 'typing-indicator';
+            indicator.id = 'typing';
+            indicator.innerHTML = '<span></span><span></span><span></span>';
+            container.appendChild(indicator);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typing');
+            if (indicator) indicator.remove();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            input.value = '';
+            input.style.height = 'auto';
+            addMessageToUI('user', message);
+
+            if (!state.apiKey) {
+                addMessageToUI('assistant', 'Bitte gib zuerst deinen Claude API Key in den Einstellungen ein (⚙️ oben rechts).');
+                return;
+            }
+
+            showTypingIndicator();
+
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': state.apiKey,
+                        'anthropic-version': '2023-06-01',
+                        'anthropic-dangerous-direct-browser-access': 'true'
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 1024,
+                        system: trainingContext,
+                        messages: [
+                            ...state.messages.slice(-10).map(m => ({
+                                role: m.role === 'assistant' ? 'assistant' : 'user',
+                                content: m.content
+                            })),
+                            { role: 'user', content: message }
+                        ]
+                    })
+                });
+
+                hideTypingIndicator();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error?.message || 'API Fehler');
+                }
+
+                const data = await response.json();
+                const reply = data.content[0].text;
+                addMessageToUI('assistant', reply);
+
+            } catch (error) {
+                hideTypingIndicator();
+                addMessageToUI('assistant', `Fehler: ${error.message}. Bitte überprüfe deinen API Key.`);
+            }
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function askCoach(question) {
+            document.getElementById('chat-input').value = question;
+            sendMessage();
+        }
+
+        // Settings
+        function openSettings() {
+            document.getElementById('api-key-input').value = state.apiKey;
+            document.getElementById('goal-time-input').value = state.goalTime;
+            document.getElementById('race-date-input').value = state.raceDate;
+            document.getElementById('settings-modal').classList.add('active');
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.remove('active');
+        }
+
+        function saveSettings() {
+            state.apiKey = document.getElementById('api-key-input').value;
+            state.goalTime = document.getElementById('goal-time-input').value;
+            state.raceDate = document.getElementById('race-date-input').value;
+
+            localStorage.setItem('apiKey', state.apiKey);
+            localStorage.setItem('goalTime', state.goalTime);
+            localStorage.setItem('raceDate', state.raceDate);
+
+            updateCountdown();
+            closeSettings();
+        }
+
+        // Activity Logging
+        function openAddActivity() {
+            document.getElementById('activity-modal').classList.add('active');
+        }
+
+        function closeActivityModal() {
+            document.getElementById('activity-modal').classList.remove('active');
+        }
+
+        function saveActivity() {
+            const activity = {
+                type: document.getElementById('activity-type').value,
+                distance: parseFloat(document.getElementById('activity-distance').value) || 0,
+                duration: parseInt(document.getElementById('activity-duration').value) || 0,
+                knee: document.getElementById('activity-knee').value,
+                notes: document.getElementById('activity-notes').value,
+                date: new Date().toISOString()
+            };
+
+            state.activities.unshift(activity);
+            localStorage.setItem('activities', JSON.stringify(state.activities));
+            closeActivityModal();
+
+            // Update knee status
+            setKneeStatus(activity.knee, false);
+        }
+
+        // Knee Status
+        function logKneeStatus() {
+            document.getElementById('knee-modal').classList.add('active');
+        }
+
+        function closeKneeModal() {
+            document.getElementById('knee-modal').classList.remove('active');
+        }
+
+        function setKneeStatus(status, closeModal = true) {
+            state.kneeStatus = status;
+            localStorage.setItem('kneeStatus', status);
+            updateKneeDisplay();
+
+            if (closeModal) {
+                closeKneeModal();
+            }
+
+            // Give feedback based on status
+            if (status === 'red') {
+                showScreen('chat');
+                setTimeout(() => {
+                    askCoach('Mein Knie schmerzt heute (rot). Was soll ich tun?');
+                }, 300);
+            } else if (status === 'yellow') {
+                showScreen('chat');
+                setTimeout(() => {
+                    askCoach('Mein Knie fühlt sich heute etwas komisch an (gelb). Soll ich trotzdem trainieren?');
+                }, 300);
+            }
+        }
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW:', err));
+        }
+    </script>
+</body>
+</html>
