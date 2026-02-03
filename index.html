@@ -930,7 +930,11 @@
 
             const thisWeekActivities = [...state.activities, ...state.stravaActivities]
                 .filter(a => new Date(a.date) >= thisWeekStart && a.type === 'run');
-            const thisWeekKm = thisWeekActivities.reduce((sum, a) => sum + (parseFloat(a.distance) || 0), 0);
+            const thisWeekKmRaw = thisWeekActivities.reduce((sum, a) => {
+                const dist = parseFloat(a.distance);
+                return sum + (isNaN(dist) ? 0 : dist);
+            }, 0);
+            const thisWeekKm = isNaN(thisWeekKmRaw) ? 0 : thisWeekKmRaw;
 
             // Knee history
             const kneeHistorySummary = state.kneeHistory.slice(-7).map(k =>
@@ -962,7 +966,7 @@ ${state.userContext ? `- Zusätzlicher Kontext: ${state.userContext}` : ''}
 Knie-Verlauf letzte Tage: ${kneeHistorySummary}
 
 📊 TRAININGSHISTORIE:
-Diese Woche bisher: ${thisWeekKm.toFixed(1)} km
+Diese Woche bisher: ${(Number(thisWeekKm) || 0).toFixed(1)} km
 Letzte Aktivitäten:
 ${activitiesSummary}
 
@@ -1904,15 +1908,22 @@ ${toneMap[state.tone]}
             // Filter activities from this week (all types, not just runs)
             const weekActivities = allActivities.filter(a => new Date(a.date) >= weekStart);
 
-            // Calculate km (parse as float to handle string values)
-            const weekKm = weekActivities
+            // Calculate km (parse as float to handle string values, with NaN protection)
+            const weekKmRaw = weekActivities
                 .filter(a => a.type === 'run')
-                .reduce((sum, a) => sum + (parseFloat(a.distance) || 0), 0);
+                .reduce((sum, a) => {
+                    const dist = parseFloat(a.distance);
+                    return sum + (isNaN(dist) ? 0 : dist);
+                }, 0);
+            const weekKm = isNaN(weekKmRaw) ? 0 : weekKmRaw;
 
             // Calculate total activity minutes this week (all types)
-            const weekMinutes = weekActivities.reduce((sum, a) => sum + (parseInt(a.duration) || 0), 0);
+            const weekMinutes = weekActivities.reduce((sum, a) => {
+                const dur = parseInt(a.duration);
+                return sum + (isNaN(dur) ? 0 : dur);
+            }, 0);
 
-            document.getElementById('week-km').innerHTML = `${weekKm.toFixed(1)} <span class="stat-unit">km</span>`;
+            document.getElementById('week-km').innerHTML = `${(Number(weekKm) || 0).toFixed(1)} <span class="stat-unit">km</span>`;
             document.getElementById('week-trend').textContent = `${weekMinutes} min Aktivität`;
 
             // Show activity minutes in second card instead of 4-week average
