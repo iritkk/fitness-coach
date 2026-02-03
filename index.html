@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Fitness Coach">
+    <meta name="apple-mobile-web-app-title" content="Road to Madrid">
     <meta name="theme-color" content="#1a202c">
-    <title>Fitness Coach AI</title>
+    <title>Road to Madrid</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
     <style>
@@ -523,14 +523,14 @@
         <!-- Splash Screen -->
         <div class="splash" id="splash">
             <div class="splash-logo">🏃‍♂️</div>
-            <div class="splash-title">Fitness Coach AI</div>
-            <div class="splash-subtitle">Dein persönlicher Laufcoach</div>
+            <div class="splash-title">Road to Madrid</div>
+            <div class="splash-subtitle">Halbmarathon · 22. März 2026</div>
             <button class="splash-btn" onclick="hideSplash()">Los geht's</button>
         </div>
 
         <!-- Header -->
         <header class="header">
-            <h1 class="header-title">Fitness Coach</h1>
+            <h1 class="header-title">Road to Madrid</h1>
             <button class="header-btn" onclick="openSettings()">⚙️</button>
         </header>
 
@@ -1722,8 +1722,8 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
                     source: 'strava',
                     averagePace: a.type === 'Run' ? formatPace(a.moving_time, a.distance) : null,
                     heartRate: a.average_heartrate || null,
-                    // Additional Strava data - Use direct calories first, then kilojoules conversion, then estimate
-                    calories: a.calories || (a.kilojoules ? Math.round(a.kilojoules * 0.239) : Math.round(a.moving_time / 60 * 10)),
+                    // Additional Strava data - Calculate calories properly based on activity type
+                    calories: estimateCalories(a.type, a.distance, a.moving_time, a.average_heartrate),
                     elevation: a.total_elevation_gain || 0,
                     maxSpeed: a.max_speed ? (a.max_speed * 3.6).toFixed(1) : null, // m/s to km/h
                     avgSpeed: a.average_speed ? (a.average_speed * 3.6).toFixed(1) : null,
@@ -1740,6 +1740,60 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             } catch (error) {
                 console.error('Strava fetch error:', error);
             }
+        }
+
+        // Calculate calories based on activity type, distance, duration and weight
+        function estimateCalories(stravaType, distanceMeters, durationSeconds, heartRate) {
+            const weight = state.weight || 85; // Default 85kg if not set
+            const distanceKm = distanceMeters / 1000;
+            const durationMin = durationSeconds / 60;
+
+            // Calories per kg per km for different activities
+            const calorieFactors = {
+                'Run': 1.0,        // ~1 kcal/kg/km for running
+                'TrailRun': 1.1,   // Slightly more for trails
+                'Walk': 0.5,       // ~0.5 kcal/kg/km for walking
+                'Hike': 0.6,       // Hiking with elevation
+                'Ride': 0.3,       // Cycling is more efficient
+                'VirtualRide': 0.3,
+                'MountainBikeRide': 0.4,
+                'Swim': 0,         // Use duration-based for swimming
+                'WeightTraining': 0,
+                'Workout': 0,
+                'Yoga': 0,
+                'Elliptical': 0,
+                'Crossfit': 0
+            };
+
+            // Duration-based calories (kcal per minute) for non-distance activities
+            const minuteFactors = {
+                'Swim': 9,           // Swimming ~9 kcal/min
+                'WeightTraining': 5, // Strength ~5 kcal/min
+                'Workout': 6,
+                'Yoga': 3,
+                'Elliptical': 8,
+                'Crossfit': 10
+            };
+
+            // If we have a distance-based activity
+            if (calorieFactors[stravaType] && distanceKm > 0) {
+                let calories = weight * distanceKm * calorieFactors[stravaType];
+
+                // Adjust for heart rate if available (higher HR = more calories)
+                if (heartRate && heartRate > 140) {
+                    calories *= 1 + (heartRate - 140) / 200; // Up to 20% bonus for high HR
+                }
+
+                return Math.round(calories);
+            }
+
+            // Duration-based activities
+            if (minuteFactors[stravaType]) {
+                return Math.round(durationMin * minuteFactors[stravaType]);
+            }
+
+            // Fallback: generic estimation
+            return Math.round(durationMin * 7); // ~7 kcal/min average
         }
 
         // Map Strava activity types to our types
@@ -1961,7 +2015,6 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
                         <div class="activity-card">
                             <div class="activity-header">
                                 <div class="activity-type">
-                                    <span class="activity-icon">${typeIcons[a.type] || '🏃'}</span>
                                     <span class="activity-name">${a.name || typeNames[a.type] || a.type}</span>
                                     ${a.kneeStatus ? `<span>${kneeIcons[a.kneeStatus] || ''}</span>` : ''}
                                 </div>
