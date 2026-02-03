@@ -544,14 +544,14 @@
 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-label">Diese Woche</div>
+                        <div class="stat-label">🏃 Lauf-km diese Woche</div>
                         <div class="stat-value" id="week-km">0 <span class="stat-unit">km</span></div>
                         <div class="stat-trend" id="week-trend">aus Strava</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Letzte 4 Wochen</div>
-                        <div class="stat-value" id="month-km">0 <span class="stat-unit">km</span></div>
-                        <div class="stat-trend" id="month-trend">Durchschnitt</div>
+                        <div class="stat-label">⏱️ Aktivität diese Woche</div>
+                        <div class="stat-value" id="month-km">0 <span class="stat-unit">min</span></div>
+                        <div class="stat-trend" id="month-trend">alle Sportarten</div>
                     </div>
                 </div>
 
@@ -579,6 +579,31 @@
                         <button class="add-btn" onclick="openActivityModal()">+</button>
                     </div>
                 </div>
+
+                <!-- Activity Filters -->
+                <div class="activity-filters" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+                    <select id="filter-type" onchange="updateActivitiesList()" style="background: var(--bg-tertiary); border: none; border-radius: 8px; padding: 0.5rem; color: var(--text-primary); font-size: 0.8rem;">
+                        <option value="all">Alle Typen</option>
+                        <option value="run">🏃 Lauf</option>
+                        <option value="bike">🚴 Radfahren</option>
+                        <option value="swim">🏊 Schwimmen</option>
+                        <option value="strength">💪 Kraft</option>
+                        <option value="mobility">🧘 Mobility</option>
+                        <option value="walk">🚶 Gehen</option>
+                        <option value="crosstrainer">🏋️ Crosstrainer</option>
+                        <option value="padel">🎾 Padel</option>
+                        <option value="basketball">🏀 Basketball</option>
+                    </select>
+                    <select id="filter-period" onchange="updateActivitiesList()" style="background: var(--bg-tertiary); border: none; border-radius: 8px; padding: 0.5rem; color: var(--text-primary); font-size: 0.8rem;">
+                        <option value="all">Alle Zeit</option>
+                        <option value="week">Diese Woche</option>
+                        <option value="month">Diesen Monat</option>
+                        <option value="3months">Letzte 3 Monate</option>
+                        <option value="6months">Letzte 6 Monate</option>
+                        <option value="year">Dieses Jahr</option>
+                    </select>
+                </div>
+
                 <div id="activities-list">
                     <div class="empty-state">
                         <div class="empty-state-icon">🏃</div>
@@ -664,6 +689,14 @@
                     <div class="meals-title" id="meals-title">Heute gegessen</div>
                     <div id="meals-today">
                         <div style="text-align: center; padding: 1rem; color: var(--text-secondary); font-size: 0.875rem;">Noch nichts eingetragen</div>
+                    </div>
+                </div>
+
+                <!-- Weekly Summary -->
+                <div class="macros-card" id="weekly-summary" style="margin-top: 1rem;">
+                    <div class="macros-title">📊 Wochenbilanz (Mo-So)</div>
+                    <div id="weekly-summary-content" style="font-size: 0.85rem; color: var(--text-secondary);">
+                        Lade...
                     </div>
                 </div>
             </div>
@@ -773,10 +806,14 @@
                     <label class="form-label">Aktivitätstyp</label>
                     <select class="form-input" id="activity-type">
                         <option value="run">🏃 Lauf</option>
+                        <option value="walk">🚶 Gehen</option>
                         <option value="bike">🚴 Radfahren</option>
                         <option value="swim">🏊 Schwimmen</option>
                         <option value="strength">💪 Krafttraining</option>
+                        <option value="crosstrainer">🏋️ Crosstrainer</option>
                         <option value="mobility">🧘 Mobility/Yoga</option>
+                        <option value="padel">🎾 Padel/Tennis</option>
+                        <option value="basketball">🏀 Basketball/Fußball</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -886,12 +923,14 @@
 
             // Calculate weekly stats
             const thisWeekStart = new Date(today);
-            thisWeekStart.setDate(today.getDate() - today.getDay() + 1);
+            const dayOfWeek = today.getDay();
+            const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+            thisWeekStart.setDate(today.getDate() - diff);
             thisWeekStart.setHours(0,0,0,0);
 
             const thisWeekActivities = [...state.activities, ...state.stravaActivities]
                 .filter(a => new Date(a.date) >= thisWeekStart && a.type === 'run');
-            const thisWeekKm = thisWeekActivities.reduce((sum, a) => sum + (a.distance || 0), 0);
+            const thisWeekKm = thisWeekActivities.reduce((sum, a) => sum + (parseFloat(a.distance) || 0), 0);
 
             // Knee history
             const kneeHistorySummary = state.kneeHistory.slice(-7).map(k =>
@@ -1252,9 +1291,16 @@ ${toneMap[state.tone]}
                 fat: acc.fat + (meal.fat || 0)
             }), { kcal: 0, protein: 0, carbs: 0, fat: 0 });
 
-            // Activity calories from today's workouts
-            const todaysActivities = state.activities.filter(a => a.date === state.currentNutritionDate);
-            const activityKcal = todaysActivities.reduce((sum, a) => sum + (a.duration * 8), 0);
+            // Activity calories from today's workouts (BOTH manual AND Strava!)
+            const allTodaysActivities = [
+                ...state.activities.filter(a => a.date === state.currentNutritionDate),
+                ...state.stravaActivities.filter(a => a.date === state.currentNutritionDate)
+            ];
+            // Use Strava calories if available, otherwise estimate 10 kcal/min
+            const activityKcal = allTodaysActivities.reduce((sum, a) => {
+                if (a.calories) return sum + a.calories;
+                return sum + ((parseInt(a.duration) || 0) * 10);
+            }, 0);
 
             const remaining = state.calorieGoal + activityKcal - totals.kcal;
 
@@ -1279,15 +1325,109 @@ ${toneMap[state.tone]}
             if (todaysMeals.length === 0) {
                 mealsContainer.innerHTML = '<div style="text-align: center; padding: 1rem; color: var(--text-secondary); font-size: 0.875rem;">Noch nichts eingetragen</div>';
             } else {
-                mealsContainer.innerHTML = todaysMeals.map(meal => `
+                mealsContainer.innerHTML = todaysMeals.map((meal, index) => `
                     <div class="meal-item">
                         <div class="meal-info">
                             <div class="meal-name">${meal.name}</div>
                             <div class="meal-time">${meal.time} · P: ${meal.protein}g · K: ${meal.carbs}g · F: ${meal.fat}g</div>
                         </div>
-                        <div class="meal-kcal">${meal.kcal} kcal</div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div class="meal-kcal">${meal.kcal} kcal</div>
+                            <button onclick="deleteMeal(${index})" style="background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.9rem; padding: 0.25rem;">✕</button>
+                        </div>
                     </div>
                 `).join('');
+            }
+
+            // Update weekly summary
+            updateWeeklySummary();
+        }
+
+        // Delete a meal
+        function deleteMeal(index) {
+            const meals = getMealsForDate(state.currentNutritionDate);
+            meals.splice(index, 1);
+            saveMealsForDate(state.currentNutritionDate, meals);
+            updateNutritionDisplay();
+        }
+
+        // Calculate weekly nutrition summary
+        function updateWeeklySummary() {
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+            let weeklyTotals = { kcal: 0, protein: 0, carbs: 0, fat: 0, days: 0 };
+            let weeklyBudget = 0;
+            let weeklyActivity = 0;
+
+            // Loop through Mon-Today
+            for (let i = mondayOffset; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+
+                const meals = getMealsForDate(dateStr);
+                if (meals.length > 0) {
+                    weeklyTotals.days++;
+                    meals.forEach(m => {
+                        weeklyTotals.kcal += m.kcal || 0;
+                        weeklyTotals.protein += m.protein || 0;
+                        weeklyTotals.carbs += m.carbs || 0;
+                        weeklyTotals.fat += m.fat || 0;
+                    });
+                }
+
+                // Daily budget
+                weeklyBudget += state.calorieGoal;
+
+                // Activity calories for this day
+                const dayActivities = [
+                    ...state.activities.filter(a => a.date === dateStr),
+                    ...state.stravaActivities.filter(a => a.date === dateStr)
+                ];
+                dayActivities.forEach(a => {
+                    if (a.calories) weeklyActivity += a.calories;
+                    else weeklyActivity += ((parseInt(a.duration) || 0) * 10);
+                });
+            }
+
+            const netBalance = weeklyBudget + weeklyActivity - weeklyTotals.kcal;
+            const avgDailyDeficit = weeklyTotals.days > 0 ? Math.round(netBalance / (mondayOffset + 1)) : 0;
+
+            let statusText = '';
+            let statusColor = 'var(--text-secondary)';
+
+            if (netBalance > 500) {
+                statusText = `✅ Du bist ${netBalance} kcal im Defizit! Gönn dir ruhig was.`;
+                statusColor = 'var(--success)';
+            } else if (netBalance > 0) {
+                statusText = `👍 Leicht im Defizit (${netBalance} kcal). Gut auf Kurs!`;
+                statusColor = 'var(--success)';
+            } else if (netBalance > -300) {
+                statusText = `⚖️ Ungefähr ausgeglichen (${Math.abs(netBalance)} kcal drüber)`;
+                statusColor = 'var(--warning)';
+            } else {
+                statusText = `⚠️ ${Math.abs(netBalance)} kcal über Budget. Morgen weniger essen!`;
+                statusColor = 'var(--danger)';
+            }
+
+            const container = document.getElementById('weekly-summary-content');
+            if (container) {
+                container.innerHTML = `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem;">
+                        <div>🍽️ Gegessen: <strong>${weeklyTotals.kcal}</strong> kcal</div>
+                        <div>🏠 Budget: <strong>${weeklyBudget}</strong> kcal</div>
+                        <div>🔥 Aktivität: <strong>+${weeklyActivity}</strong> kcal</div>
+                        <div>📊 Bilanz: <strong style="color: ${statusColor}">${netBalance > 0 ? '-' : '+'}${Math.abs(netBalance)}</strong> kcal</div>
+                    </div>
+                    <div style="padding: 0.5rem; background: var(--bg-tertiary); border-radius: 8px; color: ${statusColor}; font-weight: 500;">
+                        ${statusText}
+                    </div>
+                    <div style="margin-top: 0.5rem; font-size: 0.75rem; opacity: 0.7;">
+                        Ø ${avgDailyDeficit > 0 ? 'Defizit' : 'Überschuss'}: ${Math.abs(avgDailyDeficit)} kcal/Tag | Protein: ${weeklyTotals.protein}g | ${weeklyTotals.days} Tage geloggt
+                    </div>
+                `;
             }
         }
 
@@ -1485,17 +1625,25 @@ ${toneMap[state.tone]}
 
                 const activities = await response.json();
 
-                // Transform Strava activities to our format
+                // Transform Strava activities to our format with ALL available data
                 state.stravaActivities = activities.map(a => ({
                     id: `strava_${a.id}`,
                     type: mapStravaType(a.type),
                     date: a.start_date_local.split('T')[0],
-                    distance: (a.distance / 1000).toFixed(2),
+                    distance: parseFloat((a.distance / 1000).toFixed(2)), // NUMBER not string!
                     duration: Math.round(a.moving_time / 60),
                     name: a.name,
                     source: 'strava',
                     averagePace: a.type === 'Run' ? formatPace(a.moving_time, a.distance) : null,
-                    heartRate: a.average_heartrate || null
+                    heartRate: a.average_heartrate || null,
+                    // Additional Strava data
+                    calories: a.kilojoules ? Math.round(a.kilojoules * 0.239) : (a.calories || Math.round(a.moving_time / 60 * 10)), // Estimate ~10 kcal/min if not available
+                    elevation: a.total_elevation_gain || 0,
+                    maxSpeed: a.max_speed ? (a.max_speed * 3.6).toFixed(1) : null, // m/s to km/h
+                    avgSpeed: a.average_speed ? (a.average_speed * 3.6).toFixed(1) : null,
+                    cadence: a.average_cadence || null,
+                    sufferScore: a.suffer_score || null,
+                    achievements: a.achievement_count || 0
                 }));
 
                 localStorage.setItem('stravaActivities', JSON.stringify(state.stravaActivities));
@@ -1513,11 +1661,32 @@ ${toneMap[state.tone]}
             const typeMap = {
                 'Run': 'run',
                 'Ride': 'bike',
+                'VirtualRide': 'bike',
                 'Swim': 'swim',
                 'WeightTraining': 'strength',
+                'Workout': 'strength',
                 'Yoga': 'mobility',
-                'Walk': 'run',
-                'Hike': 'run'
+                'Walk': 'walk',
+                'Hike': 'walk',
+                'Elliptical': 'crosstrainer',
+                'EBikeRide': 'bike',
+                'Crossfit': 'strength',
+                'StairStepper': 'crosstrainer',
+                'Rowing': 'swim',
+                'Tennis': 'padel',
+                'Squash': 'padel',
+                'Badminton': 'padel',
+                'Racquetball': 'padel',
+                'Basketball': 'basketball',
+                'Soccer': 'basketball',
+                'MountainBikeRide': 'bike',
+                'GravelRide': 'bike',
+                'TrailRun': 'run',
+                'NordicSki': 'run',
+                'RollerSki': 'run',
+                'Skateboard': 'mobility',
+                'Golf': 'walk',
+                'Handcycle': 'bike'
             };
             return typeMap[stravaType] || 'run';
         }
@@ -1618,66 +1787,137 @@ ${toneMap[state.tone]}
 
         function updateActivitiesList() {
             const container = document.getElementById('activities-list');
-            const allActivities = [...state.activities, ...state.stravaActivities]
+            let allActivities = [...state.activities, ...state.stravaActivities]
                 .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            // Apply type filter
+            const typeFilter = document.getElementById('filter-type')?.value || 'all';
+            if (typeFilter !== 'all') {
+                allActivities = allActivities.filter(a => a.type === typeFilter);
+            }
+
+            // Apply period filter
+            const periodFilter = document.getElementById('filter-period')?.value || 'all';
+            const now = new Date();
+            if (periodFilter !== 'all') {
+                let startDate;
+                switch(periodFilter) {
+                    case 'week':
+                        startDate = new Date(now);
+                        const dow = now.getDay();
+                        startDate.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1));
+                        break;
+                    case 'month':
+                        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                        break;
+                    case '3months':
+                        startDate = new Date(now);
+                        startDate.setMonth(now.getMonth() - 3);
+                        break;
+                    case '6months':
+                        startDate = new Date(now);
+                        startDate.setMonth(now.getMonth() - 6);
+                        break;
+                    case 'year':
+                        startDate = new Date(now.getFullYear(), 0, 1);
+                        break;
+                }
+                if (startDate) {
+                    startDate.setHours(0,0,0,0);
+                    allActivities = allActivities.filter(a => new Date(a.date) >= startDate);
+                }
+            }
 
             if (allActivities.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">🏃</div>
-                        <p>Noch keine Aktivitäten</p>
-                        <p style="font-size: 0.875rem; margin-top: 0.5rem;">Verbinde Strava oder füge manuell hinzu</p>
-                        <button class="strava-connect" onclick="connectStrava()">
+                        <p>Keine Aktivitäten gefunden</p>
+                        <p style="font-size: 0.875rem; margin-top: 0.5rem;">${state.stravaConnected ? 'Ändere den Filter oder synchronisiere Strava' : 'Verbinde Strava oder füge manuell hinzu'}</p>
+                        ${!state.stravaConnected ? `<button class="strava-connect" onclick="connectStrava()">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>
                             Mit Strava verbinden
-                        </button>
+                        </button>` : ''}
                     </div>`;
                 return;
             }
 
-            const typeIcons = { run: '🏃', bike: '🚴', swim: '🏊', strength: '💪', mobility: '🧘' };
-            const typeNames = { run: 'Lauf', bike: 'Radfahren', swim: 'Schwimmen', strength: 'Krafttraining', mobility: 'Mobility' };
+            const typeIcons = { run: '🏃', bike: '🚴', swim: '🏊', strength: '💪', mobility: '🧘', walk: '🚶', crosstrainer: '🏋️', padel: '🎾', basketball: '🏀' };
+            const typeNames = { run: 'Lauf', bike: 'Radfahren', swim: 'Schwimmen', strength: 'Krafttraining', mobility: 'Mobility', walk: 'Gehen', crosstrainer: 'Crosstrainer', padel: 'Padel', basketball: 'Basketball' };
             const kneeIcons = { green: '🟢', yellow: '🟡', red: '🔴' };
+            const monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 
-            container.innerHTML = allActivities.slice(0, 20).map(a => `
-                <div class="activity-card">
-                    <div class="activity-header">
-                        <div class="activity-type">
-                            <span class="activity-icon">${typeIcons[a.type] || '🏃'}</span>
-                            <span class="activity-name">${a.name || typeNames[a.type] || a.type}</span>
-                            ${a.kneeStatus ? `<span>${kneeIcons[a.kneeStatus] || ''}</span>` : ''}
-                        </div>
-                        <div class="activity-date">${new Date(a.date).toLocaleDateString('de-DE')}</div>
-                    </div>
-                    <div class="activity-stats">
-                        ${a.distance ? `<span class="activity-stat">📏 ${a.distance} km</span>` : ''}
-                        ${a.duration ? `<span class="activity-stat">⏱️ ${a.duration} min</span>` : ''}
-                        ${a.averagePace ? `<span class="activity-stat">🏃 ${a.averagePace}</span>` : ''}
-                        ${a.heartRate ? `<span class="activity-stat">❤️ ${Math.round(a.heartRate)} bpm</span>` : ''}
-                        ${a.source === 'strava' ? '<span class="activity-stat" style="color: #fc4c02;">⚡ Strava</span>' : ''}
-                    </div>
-                </div>
-            `).join('');
+            // Group by month
+            const grouped = {};
+            allActivities.forEach(a => {
+                const d = new Date(a.date);
+                const key = `${d.getFullYear()}-${d.getMonth()}`;
+                if (!grouped[key]) {
+                    grouped[key] = { label: `${monthNames[d.getMonth()]} ${d.getFullYear()}`, activities: [] };
+                }
+                grouped[key].activities.push(a);
+            });
+
+            // Render grouped
+            let html = '';
+            Object.values(grouped).forEach(group => {
+                html += `<div style="font-weight: 600; color: var(--accent); margin: 1rem 0 0.5rem; font-size: 0.9rem;">${group.label}</div>`;
+                group.activities.forEach(a => {
+                    html += `
+                        <div class="activity-card">
+                            <div class="activity-header">
+                                <div class="activity-type">
+                                    <span class="activity-icon">${typeIcons[a.type] || '🏃'}</span>
+                                    <span class="activity-name">${a.name || typeNames[a.type] || a.type}</span>
+                                    ${a.kneeStatus ? `<span>${kneeIcons[a.kneeStatus] || ''}</span>` : ''}
+                                </div>
+                                <div class="activity-date">${new Date(a.date).toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric' })}</div>
+                            </div>
+                            <div class="activity-stats" style="flex-wrap: wrap;">
+                                ${a.distance ? `<span class="activity-stat">📏 ${parseFloat(a.distance).toFixed(1)} km</span>` : ''}
+                                ${a.duration ? `<span class="activity-stat">⏱️ ${a.duration} min</span>` : ''}
+                                ${a.averagePace ? `<span class="activity-stat">🏃 ${a.averagePace}</span>` : ''}
+                                ${a.heartRate ? `<span class="activity-stat">❤️ ${Math.round(a.heartRate)} bpm</span>` : ''}
+                                ${a.elevation ? `<span class="activity-stat">⛰️ ${Math.round(a.elevation)}m</span>` : ''}
+                                ${a.calories ? `<span class="activity-stat">🔥 ${a.calories} kcal</span>` : ''}
+                                ${a.cadence ? `<span class="activity-stat">👟 ${Math.round(a.cadence)} spm</span>` : ''}
+                                ${a.source === 'strava' ? '<span class="activity-stat" style="color: #fc4c02;">⚡</span>' : ''}
+                            </div>
+                        </div>`;
+                });
+            });
+
+            container.innerHTML = html;
         }
 
         function updateWeekStats() {
             const today = new Date();
             const weekStart = new Date(today);
-            weekStart.setDate(today.getDate() - today.getDay() + 1);
+            // Start from Monday (getDay() returns 0 for Sunday)
+            const dayOfWeek = today.getDay();
+            const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Monday = 0
+            weekStart.setDate(today.getDate() - diff);
             weekStart.setHours(0, 0, 0, 0);
 
             const allActivities = [...state.activities, ...state.stravaActivities];
-            const weekActivities = allActivities.filter(a => new Date(a.date) >= weekStart && a.type === 'run');
-            const weekKm = weekActivities.reduce((sum, a) => sum + (a.distance || 0), 0);
+
+            // Filter activities from this week (all types, not just runs)
+            const weekActivities = allActivities.filter(a => new Date(a.date) >= weekStart);
+
+            // Calculate km (parse as float to handle string values)
+            const weekKm = weekActivities
+                .filter(a => a.type === 'run')
+                .reduce((sum, a) => sum + (parseFloat(a.distance) || 0), 0);
+
+            // Calculate total activity minutes this week (all types)
+            const weekMinutes = weekActivities.reduce((sum, a) => sum + (parseInt(a.duration) || 0), 0);
 
             document.getElementById('week-km').innerHTML = `${weekKm.toFixed(1)} <span class="stat-unit">km</span>`;
+            document.getElementById('week-trend').textContent = `${weekMinutes} min Aktivität`;
 
-            // Last 4 weeks average
-            const fourWeeksAgo = new Date(today);
-            fourWeeksAgo.setDate(today.getDate() - 28);
-            const monthActivities = allActivities.filter(a => new Date(a.date) >= fourWeeksAgo && a.type === 'run');
-            const monthKm = monthActivities.reduce((sum, a) => sum + (a.distance || 0), 0);
-            document.getElementById('month-km').innerHTML = `${(monthKm / 4).toFixed(1)} <span class="stat-unit">km/W</span>`;
+            // Show activity minutes in second card instead of 4-week average
+            document.getElementById('month-km').innerHTML = `${weekMinutes} <span class="stat-unit">min</span>`;
+            document.getElementById('month-trend').textContent = 'Aktivität diese Woche';
         }
 
         // Service Worker
