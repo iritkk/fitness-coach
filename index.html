@@ -442,6 +442,114 @@
         .meal-time { font-size: 0.75rem; color: var(--text-secondary); }
         .meal-kcal { font-weight: 600; color: var(--accent); }
 
+        /* Product Search */
+        .search-container { position: relative; }
+        .search-input-row { display: flex; gap: 0.5rem; }
+        .search-input {
+            flex: 1;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        .search-input::placeholder { color: var(--text-secondary); }
+        .barcode-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+        }
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border-radius: 0 0 12px 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 50;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .search-results.hidden { display: none; }
+        .search-result-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--bg-tertiary);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .search-result-item:hover { background: var(--bg-tertiary); }
+        .search-result-item:last-child { border-bottom: none; border-radius: 0 0 12px 12px; }
+        .result-name { font-size: 0.9rem; margin-bottom: 0.25rem; }
+        .result-brand { font-size: 0.75rem; color: var(--text-secondary); }
+        .result-macros { font-size: 0.75rem; color: var(--accent); margin-top: 0.25rem; }
+        .search-loading, .search-empty { padding: 1rem; text-align: center; color: var(--text-secondary); font-size: 0.85rem; }
+        .ai-fallback { padding: 0.75rem 1rem; background: var(--bg-tertiary); border-radius: 8px; margin-top: 0.5rem; cursor: pointer; font-size: 0.85rem; }
+        .ai-fallback:hover { background: var(--accent); color: white; }
+
+        /* Barcode Scanner Modal */
+        .scanner-modal {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-primary);
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+        }
+        .scanner-modal.hidden { display: none; }
+        .scanner-header {
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+        }
+        .scanner-video-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .scanner-video {
+            width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+        .scanner-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .scanner-frame {
+            width: 250px;
+            height: 150px;
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+        }
+        .scanner-hint {
+            position: absolute;
+            bottom: 2rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+
         /* Modals */
         .modal-overlay {
             position: fixed;
@@ -705,11 +813,41 @@
 
                 <div class="meal-input-card" id="meal-input-card">
                     <div class="meal-input-title">🍽️ Was hast du gegessen?</div>
-                    <textarea class="meal-textarea" id="meal-input" placeholder="Einfach eintippen, z.B.: 2 Eier, Toast, Kaffee mit Milch" onkeydown="handleMealKeyDown(event)" onblur="handleMealBlur()"></textarea>
-                    <div class="meal-hint">Drücke Enter oder tippe fertig - wird automatisch analysiert</div>
+                    <div class="search-container">
+                        <div class="search-input-row">
+                            <input type="text" class="search-input" id="food-search" placeholder="Produkt suchen (z.B. Ehrmann Protein)" oninput="searchFood()" onkeydown="handleFoodSearchKeydown(event)">
+                            <button class="barcode-btn" onclick="openBarcodeScanner()" title="Barcode scannen">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><line x1="7" y1="12" x2="7" y2="12"></line><line x1="12" y1="12" x2="12" y2="12"></line><line x1="17" y1="12" x2="17" y2="12"></line></svg>
+                            </button>
+                        </div>
+                        <div class="search-results hidden" id="search-results"></div>
+                    </div>
+                    <div class="meal-hint">Suche ein Produkt oder scanne den Barcode · <span style="color: var(--accent); cursor: pointer;" onclick="toggleAiInput()">Oder per KI schätzen</span></div>
+
+                    <!-- AI Fallback Input (hidden by default) -->
+                    <div id="ai-input-section" class="hidden" style="margin-top: 0.75rem;">
+                        <textarea class="meal-textarea" id="meal-input" placeholder="Freier Text: 2 Eier, Toast, Kaffee mit Milch" onkeydown="handleMealKeyDown(event)"></textarea>
+                        <button class="btn btn-primary" onclick="triggerMealAnalysis()" style="margin-top: 0.5rem;">KI analysieren</button>
+                    </div>
+
                     <div class="analyzing-indicator hidden" id="analyzing-indicator">
                         <span class="typing-indicator" style="padding: 0;"><span></span><span></span><span></span></span>
                         Analysiere...
+                    </div>
+                </div>
+
+                <!-- Barcode Scanner Modal -->
+                <div class="scanner-modal hidden" id="scanner-modal">
+                    <div class="scanner-header">
+                        <span style="font-weight: 600;">Barcode scannen</span>
+                        <button onclick="closeBarcodeScanner()" style="background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer;">✕</button>
+                    </div>
+                    <div class="scanner-video-container">
+                        <video id="scanner-video" class="scanner-video" autoplay playsinline></video>
+                        <div class="scanner-overlay">
+                            <div class="scanner-frame"></div>
+                        </div>
+                        <div class="scanner-hint">Barcode im Rahmen positionieren</div>
                     </div>
                 </div>
 
@@ -1274,7 +1412,215 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             updateNutritionDisplay();
         }
 
-        // Auto-analyze meal (like Yazio - in background)
+        // ============== FOOD SEARCH (Open Food Facts) ==============
+        let searchTimeout = null;
+        let barcodeDetector = null;
+        let videoStream = null;
+
+        async function searchFood() {
+            const query = document.getElementById('food-search').value.trim();
+            const resultsContainer = document.getElementById('search-results');
+
+            if (query.length < 2) {
+                resultsContainer.classList.add('hidden');
+                return;
+            }
+
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(async () => {
+                resultsContainer.innerHTML = '<div class="search-loading">Suche...</div>';
+                resultsContainer.classList.remove('hidden');
+
+                try {
+                    // Search Open Food Facts (German products)
+                    const response = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=10&countries_tags=germany`);
+                    const data = await response.json();
+
+                    if (data.products && data.products.length > 0) {
+                        resultsContainer.innerHTML = data.products.map(p => {
+                            const name = p.product_name || 'Unbekannt';
+                            const brand = p.brands || '';
+                            const kcal = Math.round(p.nutriments?.['energy-kcal_100g'] || p.nutriments?.['energy-kcal'] || 0);
+                            const protein = Math.round(p.nutriments?.proteins_100g || 0);
+                            const carbs = Math.round(p.nutriments?.carbohydrates_100g || 0);
+                            const fat = Math.round(p.nutriments?.fat_100g || 0);
+                            const serving = p.serving_size || '100g';
+
+                            return `
+                                <div class="search-result-item" onclick='selectFoodProduct(${JSON.stringify({
+                                    name: (brand ? brand + ' ' : '') + name,
+                                    kcal, protein, carbs, fat, serving,
+                                    kcal100g: kcal, protein100g: protein, carbs100g: carbs, fat100g: fat
+                                })})'>
+                                    <div class="result-name">${name}</div>
+                                    ${brand ? `<div class="result-brand">${brand}</div>` : ''}
+                                    <div class="result-macros">${kcal} kcal · ${protein}g P · ${carbs}g K · ${fat}g F (pro 100g)</div>
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        resultsContainer.innerHTML = `
+                            <div class="search-empty">Keine Produkte gefunden</div>
+                            <div class="ai-fallback" onclick="useAiForSearch()">🤖 Per KI schätzen: "${query}"</div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Search error:', error);
+                    resultsContainer.innerHTML = `
+                        <div class="search-empty">Suche fehlgeschlagen</div>
+                        <div class="ai-fallback" onclick="useAiForSearch()">🤖 Per KI schätzen: "${query}"</div>
+                    `;
+                }
+            }, 300); // Debounce 300ms
+        }
+
+        function handleFoodSearchKeydown(event) {
+            if (event.key === 'Escape') {
+                document.getElementById('search-results').classList.add('hidden');
+            }
+        }
+
+        function selectFoodProduct(product) {
+            // Show portion selector
+            const portion = prompt(`Portion? (Standard: ${product.serving || '100g'})`, product.serving || '100g');
+            if (!portion) return;
+
+            // Calculate based on portion (simple: assume grams)
+            let multiplier = 1;
+            const match = portion.match(/(\d+)/);
+            if (match) {
+                const grams = parseInt(match[1]);
+                multiplier = grams / 100;
+            }
+
+            const mealData = {
+                name: product.name,
+                kcal: Math.round(product.kcal100g * multiplier),
+                protein: Math.round(product.protein100g * multiplier * 10) / 10,
+                carbs: Math.round(product.carbs100g * multiplier * 10) / 10,
+                fat: Math.round(product.fat100g * multiplier * 10) / 10,
+                time: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }),
+                id: Date.now(),
+                portion: portion,
+                source: 'openfoodfacts'
+            };
+
+            const meals = getMealsForDate(state.currentNutritionDate);
+            meals.push(mealData);
+            saveMealsForDate(state.currentNutritionDate, meals);
+
+            document.getElementById('food-search').value = '';
+            document.getElementById('search-results').classList.add('hidden');
+            updateNutritionDisplay();
+            showToast(`✓ ${mealData.name} (${mealData.kcal} kcal)`);
+        }
+
+        function useAiForSearch() {
+            const query = document.getElementById('food-search').value.trim();
+            document.getElementById('meal-input').value = query;
+            document.getElementById('ai-input-section').classList.remove('hidden');
+            document.getElementById('search-results').classList.add('hidden');
+            document.getElementById('food-search').value = '';
+        }
+
+        function toggleAiInput() {
+            const aiSection = document.getElementById('ai-input-section');
+            aiSection.classList.toggle('hidden');
+        }
+
+        // ============== BARCODE SCANNER ==============
+        async function openBarcodeScanner() {
+            const modal = document.getElementById('scanner-modal');
+            const video = document.getElementById('scanner-video');
+
+            try {
+                // Request camera access
+                videoStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment' }
+                });
+                video.srcObject = videoStream;
+                modal.classList.remove('hidden');
+
+                // Try to use BarcodeDetector API (Chrome)
+                if ('BarcodeDetector' in window) {
+                    barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] });
+                    detectBarcode();
+                } else {
+                    // Fallback: manual entry
+                    const barcode = prompt('Barcode-Scanner nicht verfügbar. Barcode manuell eingeben:');
+                    if (barcode) {
+                        closeBarcodeScanner();
+                        lookupBarcode(barcode);
+                    }
+                }
+            } catch (error) {
+                console.error('Camera error:', error);
+                showToast('Kamera-Zugriff verweigert', true);
+                closeBarcodeScanner();
+            }
+        }
+
+        async function detectBarcode() {
+            const video = document.getElementById('scanner-video');
+            if (!barcodeDetector || !videoStream) return;
+
+            try {
+                const barcodes = await barcodeDetector.detect(video);
+                if (barcodes.length > 0) {
+                    const barcode = barcodes[0].rawValue;
+                    closeBarcodeScanner();
+                    lookupBarcode(barcode);
+                    return;
+                }
+            } catch (error) {
+                console.error('Detection error:', error);
+            }
+
+            // Continue scanning
+            if (videoStream) {
+                requestAnimationFrame(detectBarcode);
+            }
+        }
+
+        async function lookupBarcode(barcode) {
+            showToast(`Suche Barcode ${barcode}...`);
+
+            try {
+                const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+                const data = await response.json();
+
+                if (data.status === 1 && data.product) {
+                    const p = data.product;
+                    selectFoodProduct({
+                        name: (p.brands ? p.brands + ' ' : '') + (p.product_name || 'Produkt'),
+                        kcal100g: Math.round(p.nutriments?.['energy-kcal_100g'] || 0),
+                        protein100g: Math.round(p.nutriments?.proteins_100g || 0),
+                        carbs100g: Math.round(p.nutriments?.carbohydrates_100g || 0),
+                        fat100g: Math.round(p.nutriments?.fat_100g || 0),
+                        serving: p.serving_size || '100g'
+                    });
+                } else {
+                    showToast('Produkt nicht gefunden', true);
+                }
+            } catch (error) {
+                console.error('Barcode lookup error:', error);
+                showToast('Fehler bei Barcode-Suche', true);
+            }
+        }
+
+        function closeBarcodeScanner() {
+            const modal = document.getElementById('scanner-modal');
+            const video = document.getElementById('scanner-video');
+
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+            video.srcObject = null;
+            modal.classList.add('hidden');
+        }
+
+        // ============== AI MEAL ANALYSIS (Fallback) ==============
         let mealAnalysisTimeout = null;
 
         function handleMealKeyDown(event) {
@@ -1510,7 +1856,7 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
                         ${statusText}
                     </div>
                     <div style="margin-top: 0.5rem; font-size: 0.75rem; opacity: 0.7;">
-                        Ø ${avgDailyDeficit > 0 ? 'Defizit' : 'Überschuss'}: ${Math.abs(avgDailyDeficit)} kcal/Tag | Protein: ${weeklyTotals.protein}g | ${weeklyTotals.days} Tage geloggt
+                        Ø ${avgDailyDeficit > 0 ? 'Defizit' : 'Überschuss'}: ${Math.abs(avgDailyDeficit)} kcal/Tag | Protein: ${weeklyTotals.protein.toFixed(1)}g | ${weeklyTotals.days} Tage geloggt
                     </div>
                 `;
             }
