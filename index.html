@@ -236,6 +236,256 @@
         }
         .send-btn svg { fill: white; width: 20px; height: 20px; }
 
+        /* Multi-Chat Header */
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+        .chat-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            flex: 1;
+            max-width: 250px;
+        }
+        .chat-selector:hover { background: var(--bg-primary); }
+        .chat-selector-title {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.9rem;
+        }
+        .chat-selector-icon { color: var(--text-secondary); font-size: 0.8rem; }
+        .new-chat-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            color: white;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .new-chat-btn:hover { background: #dd6b20; }
+
+        /* Chat List Modal */
+        .chat-list-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 100;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .chat-list-modal.hidden { display: none; }
+        .chat-list-container {
+            background: var(--bg-secondary);
+            border-radius: 16px 16px 0 0;
+            width: 100%;
+            max-width: 500px;
+            max-height: 70vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-list-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-list-header h3 { font-size: 1rem; }
+        .chat-list-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .chat-list {
+            overflow-y: auto;
+            flex: 1;
+        }
+        .chat-list-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--bg-tertiary);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-list-item:hover { background: var(--bg-tertiary); }
+        .chat-list-item.active { background: var(--bg-primary); border-left: 3px solid var(--accent); }
+        .chat-list-item-info { flex: 1; min-width: 0; }
+        .chat-list-item-title {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-list-item-preview {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 0.25rem;
+        }
+        .chat-list-item-date {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-left: 0.5rem;
+            white-space: nowrap;
+        }
+        .chat-delete-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            padding: 0.5rem;
+            cursor: pointer;
+            opacity: 0.6;
+        }
+        .chat-delete-btn:hover { opacity: 1; }
+
+        /* Portion Selection Modal */
+        .portion-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .portion-modal.hidden { display: none; }
+        .portion-container {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .portion-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+        .portion-product-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+        .portion-base-info {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .portion-options {
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        .portion-option {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+            background: var(--bg-tertiary);
+        }
+        .portion-option:hover { background: var(--bg-primary); }
+        .portion-option.selected {
+            background: var(--accent);
+            color: white;
+        }
+        .portion-option-icon { font-size: 1.5rem; margin-right: 0.75rem; }
+        .portion-option-info { flex: 1; }
+        .portion-option-name { font-weight: 500; }
+        .portion-option-amount { font-size: 0.8rem; opacity: 0.8; }
+        .portion-custom {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--bg-tertiary);
+        }
+        .portion-custom-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        .portion-custom-input {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .portion-custom-input input {
+            flex: 1;
+            background: var(--bg-primary);
+            border: 1px solid var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        .portion-custom-input input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .portion-preview {
+            padding: 1rem;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--bg-tertiary);
+        }
+        .portion-preview-title {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        .portion-preview-macros {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        .portion-macro { }
+        .portion-macro-value { font-size: 1.25rem; font-weight: 600; }
+        .portion-macro-label { font-size: 0.7rem; color: var(--text-secondary); }
+        .portion-macro.kcal .portion-macro-value { color: var(--accent); }
+        .portion-actions {
+            padding: 1rem;
+            display: flex;
+            gap: 0.75rem;
+        }
+        .portion-btn {
+            flex: 1;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .portion-btn-cancel {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        .portion-btn-add {
+            background: var(--accent);
+            color: white;
+        }
+
         /* Dashboard */
         .dashboard { padding: 1rem; overflow-y: auto; }
         .countdown-card {
@@ -644,12 +894,32 @@
 
         <!-- Chat Screen -->
         <div class="screen active" id="screen-chat">
+            <div class="chat-header">
+                <div class="chat-selector" onclick="openChatList()">
+                    <span class="chat-selector-title" id="current-chat-title">Neuer Chat</span>
+                    <span class="chat-selector-icon">▼</span>
+                </div>
+                <button class="new-chat-btn" onclick="createNewChat()">
+                    <span>+</span> Neu
+                </button>
+            </div>
             <div class="chat-messages" id="chat-messages"></div>
             <div class="chat-input-container">
                 <textarea class="chat-input" id="chat-input" placeholder="Nachricht eingeben..." rows="1" onkeydown="handleKeyDown(event)"></textarea>
                 <button class="send-btn" onclick="sendMessage()">
                     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
+            </div>
+        </div>
+
+        <!-- Chat List Modal -->
+        <div class="chat-list-modal hidden" id="chat-list-modal" onclick="closeChatList(event)">
+            <div class="chat-list-container" onclick="event.stopPropagation()">
+                <div class="chat-list-header">
+                    <h3>Deine Chats</h3>
+                    <button class="chat-list-close" onclick="closeChatList()">&times;</button>
+                </div>
+                <div class="chat-list" id="chat-list"></div>
             </div>
         </div>
 
@@ -889,6 +1159,44 @@
         </nav>
     </div>
 
+    <!-- Portion Selection Modal -->
+    <div class="portion-modal hidden" id="portion-modal">
+        <div class="portion-container">
+            <div class="portion-header">
+                <div class="portion-product-name" id="portion-product-name">Produkt</div>
+                <div class="portion-base-info" id="portion-base-info">pro 100g</div>
+            </div>
+            <div class="portion-options" id="portion-options">
+                <!-- Filled by JS -->
+            </div>
+            <div class="portion-preview">
+                <div class="portion-preview-title">Nährwerte für gewählte Portion:</div>
+                <div class="portion-preview-macros">
+                    <div class="portion-macro kcal">
+                        <div class="portion-macro-value" id="portion-kcal">0</div>
+                        <div class="portion-macro-label">kcal</div>
+                    </div>
+                    <div class="portion-macro">
+                        <div class="portion-macro-value" id="portion-protein">0g</div>
+                        <div class="portion-macro-label">Protein</div>
+                    </div>
+                    <div class="portion-macro">
+                        <div class="portion-macro-value" id="portion-carbs">0g</div>
+                        <div class="portion-macro-label">Carbs</div>
+                    </div>
+                    <div class="portion-macro">
+                        <div class="portion-macro-value" id="portion-fat">0g</div>
+                        <div class="portion-macro-label">Fett</div>
+                    </div>
+                </div>
+            </div>
+            <div class="portion-actions">
+                <button class="portion-btn portion-btn-cancel" onclick="closePortionModal()">Abbrechen</button>
+                <button class="portion-btn portion-btn-add" onclick="confirmPortion()">Hinzufügen</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Settings Modal -->
     <div class="modal-overlay" id="settings-modal">
         <div class="modal">
@@ -1012,7 +1320,57 @@
     </div>
 
     <script>
+        // Generate unique chat ID
+        function generateChatId() {
+            return 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Initialize multi-chat system with migration from old single-chat
+        function initializeChats() {
+            const storedChats = localStorage.getItem('chats');
+            const oldMessages = localStorage.getItem('messages');
+
+            if (storedChats) {
+                return JSON.parse(storedChats);
+            }
+
+            // Migrate from old single messages array
+            if (oldMessages) {
+                const messages = JSON.parse(oldMessages);
+                if (messages.length > 0) {
+                    const chatId = generateChatId();
+                    return {
+                        [chatId]: {
+                            id: chatId,
+                            title: 'Migrierter Chat',
+                            messages: messages,
+                            createdAt: Date.now(),
+                            updatedAt: Date.now()
+                        }
+                    };
+                }
+            }
+
+            // Create default empty chat
+            const chatId = generateChatId();
+            return {
+                [chatId]: {
+                    id: chatId,
+                    title: 'Neuer Chat',
+                    messages: [],
+                    createdAt: Date.now(),
+                    updatedAt: Date.now()
+                }
+            };
+        }
+
+        function getFirstChatId(chats) {
+            const sorted = Object.values(chats).sort((a, b) => b.updatedAt - a.updatedAt);
+            return sorted[0]?.id || null;
+        }
+
         // State
+        const chatsData = initializeChats();
         const state = {
             apiKey: localStorage.getItem('apiKey') || '',
             goalTime: localStorage.getItem('goalTime') || '1:59:59',
@@ -1020,7 +1378,12 @@
             activities: JSON.parse(localStorage.getItem('activities') || '[]'),
             kneeStatus: localStorage.getItem('kneeStatus') || 'green',
             kneeHistory: JSON.parse(localStorage.getItem('kneeHistory') || '[]'),
-            messages: JSON.parse(localStorage.getItem('messages') || '[]'),
+            // Multi-chat support
+            chats: chatsData,
+            currentChatId: localStorage.getItem('currentChatId') || getFirstChatId(chatsData),
+            // Legacy - kept for compatibility, points to current chat messages
+            get messages() { return this.chats[this.currentChatId]?.messages || []; },
+            set messages(val) { if (this.chats[this.currentChatId]) this.chats[this.currentChatId].messages = val; },
             hasSeenSplash: localStorage.getItem('hasSeenSplash') === 'true',
             userContext: localStorage.getItem('userContext') || '',
             tone: localStorage.getItem('tone') || 'motivierend',
@@ -1246,6 +1609,144 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             }
         }
 
+        // ============== MULTI-CHAT SYSTEM ==============
+
+        // Save all chats to localStorage
+        function saveChats() {
+            localStorage.setItem('chats', JSON.stringify(state.chats));
+            localStorage.setItem('currentChatId', state.currentChatId);
+        }
+
+        // Create a new chat
+        function createNewChat() {
+            const chatId = generateChatId();
+            state.chats[chatId] = {
+                id: chatId,
+                title: 'Neuer Chat',
+                messages: [],
+                createdAt: Date.now(),
+                updatedAt: Date.now()
+            };
+            state.currentChatId = chatId;
+            saveChats();
+            loadMessages();
+            updateChatHeader();
+            closeChatList();
+        }
+
+        // Switch to a different chat
+        function switchToChat(chatId) {
+            if (state.chats[chatId]) {
+                state.currentChatId = chatId;
+                saveChats();
+                loadMessages();
+                updateChatHeader();
+                closeChatList();
+            }
+        }
+
+        // Delete a chat
+        function deleteChat(chatId, event) {
+            event.stopPropagation();
+            const chatCount = Object.keys(state.chats).length;
+
+            if (chatCount <= 1) {
+                showToast('Letzter Chat kann nicht gelöscht werden', true);
+                return;
+            }
+
+            if (!confirm('Diesen Chat wirklich löschen?')) return;
+
+            delete state.chats[chatId];
+
+            // If deleted current chat, switch to another
+            if (state.currentChatId === chatId) {
+                state.currentChatId = getFirstChatId(state.chats);
+            }
+
+            saveChats();
+            renderChatList();
+            loadMessages();
+            updateChatHeader();
+        }
+
+        // Open chat list modal
+        function openChatList() {
+            renderChatList();
+            document.getElementById('chat-list-modal').classList.remove('hidden');
+        }
+
+        // Close chat list modal
+        function closeChatList(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('chat-list-modal').classList.add('hidden');
+        }
+
+        // Render the chat list
+        function renderChatList() {
+            const container = document.getElementById('chat-list');
+            const sortedChats = Object.values(state.chats).sort((a, b) => b.updatedAt - a.updatedAt);
+
+            container.innerHTML = sortedChats.map(chat => {
+                const isActive = chat.id === state.currentChatId;
+                const lastMsg = chat.messages[chat.messages.length - 1];
+                const preview = lastMsg ? (lastMsg.content.substring(0, 50) + (lastMsg.content.length > 50 ? '...' : '')) : 'Keine Nachrichten';
+                const date = new Date(chat.updatedAt).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+
+                return `
+                    <div class="chat-list-item ${isActive ? 'active' : ''}" onclick="switchToChat('${chat.id}')">
+                        <div class="chat-list-item-info">
+                            <div class="chat-list-item-title">${escapeHtml(chat.title)}</div>
+                            <div class="chat-list-item-preview">${escapeHtml(preview)}</div>
+                        </div>
+                        <span class="chat-list-item-date">${date}</span>
+                        <button class="chat-delete-btn" onclick="deleteChat('${chat.id}', event)" title="Löschen">🗑️</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update chat header with current chat title
+        function updateChatHeader() {
+            const titleEl = document.getElementById('current-chat-title');
+            const currentChat = state.chats[state.currentChatId];
+            if (titleEl && currentChat) {
+                titleEl.textContent = currentChat.title;
+            }
+        }
+
+        // Auto-generate chat title from first user message
+        function updateChatTitleFromMessage(message) {
+            const currentChat = state.chats[state.currentChatId];
+            if (currentChat && currentChat.title === 'Neuer Chat' && currentChat.messages.length <= 2) {
+                // Generate title from first user message (max 30 chars)
+                const title = message.substring(0, 30) + (message.length > 30 ? '...' : '');
+                currentChat.title = title;
+                updateChatHeader();
+            }
+        }
+
+        // Get all messages across all chats for context (shared memory)
+        function getAllChatContext() {
+            const allChats = Object.values(state.chats).sort((a, b) => b.updatedAt - a.updatedAt);
+            let context = '';
+
+            // Get summary of other chats (not current)
+            const otherChats = allChats.filter(c => c.id !== state.currentChatId);
+            if (otherChats.length > 0) {
+                context = '\n\n[KONTEXT AUS FRÜHEREN CHATS:]\n';
+                otherChats.slice(0, 5).forEach(chat => {
+                    if (chat.messages.length > 0) {
+                        const summary = chat.messages.slice(-3).map(m =>
+                            `${m.role === 'user' ? 'User' : 'Coach'}: ${m.content.substring(0, 100)}...`
+                        ).join('\n');
+                        context += `\n--- ${chat.title} ---\n${summary}\n`;
+                    }
+                });
+            }
+            return context;
+        }
+
         // Load messages
         function loadMessages() {
             const container = document.getElementById('chat-messages');
@@ -1257,6 +1758,8 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             } else {
                 state.messages.forEach((msg, index) => addMessageToUI(msg.role, msg.content, false, index));
             }
+
+            updateChatHeader();
         }
 
         // Add message to UI with delete button
@@ -1283,22 +1786,34 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
 
             if (save) {
                 state.messages.push({ role, content });
-                localStorage.setItem('messages', JSON.stringify(state.messages.slice(-50)));
+                // Update current chat's updatedAt
+                if (state.chats[state.currentChatId]) {
+                    state.chats[state.currentChatId].updatedAt = Date.now();
+                }
+                // Auto-generate title from first user message
+                if (role === 'user') {
+                    updateChatTitleFromMessage(content);
+                }
+                // Save to multi-chat storage
+                saveChats();
             }
         }
 
         // Delete single message
         function deleteMessage(index) {
             state.messages.splice(index, 1);
-            localStorage.setItem('messages', JSON.stringify(state.messages));
+            saveChats();
             loadMessages();
         }
 
-        // Clear all chat history
+        // Clear current chat history (keeps the chat, just clears messages)
         function clearChatHistory() {
-            if (confirm('Möchtest du wirklich den gesamten Chat-Verlauf löschen?')) {
-                state.messages = [];
-                localStorage.setItem('messages', JSON.stringify([]));
+            if (confirm('Möchtest du wirklich diesen Chat-Verlauf löschen?')) {
+                if (state.chats[state.currentChatId]) {
+                    state.chats[state.currentChatId].messages = [];
+                    state.chats[state.currentChatId].title = 'Neuer Chat';
+                }
+                saveChats();
                 loadMessages();
                 closeSettings();
             }
@@ -1370,7 +1885,7 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
                     body: JSON.stringify({
                         model: 'claude-sonnet-4-20250514',
                         max_tokens: 1024,
-                        system: generateTrainingContext(),
+                        system: generateTrainingContext() + getAllChatContext(),
                         messages: [
                             ...state.messages.slice(-10).map(m => ({
                                 role: m.role === 'assistant' ? 'assistant' : 'user',
@@ -1480,28 +1995,111 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             }
         }
 
+        // ============== PORTION SELECTION ==============
+        let currentProduct = null;
+        let selectedPortionGrams = 100;
+
+        // Standard portion sizes
+        const PORTION_PRESETS = [
+            { name: '100g', grams: 100, icon: '⚖️' },
+            { name: '1 Portion', grams: 150, icon: '🍽️' },
+            { name: '1 Becher', grams: 150, icon: '🥛' },
+            { name: '1 Glas (200ml)', grams: 200, icon: '🥤' },
+            { name: '1 Flasche (500ml)', grams: 500, icon: '🍼' },
+            { name: '1 Flasche (330ml)', grams: 330, icon: '🧴' },
+            { name: '1 Dose (330ml)', grams: 330, icon: '🥫' },
+            { name: '1 Riegel', grams: 40, icon: '🍫' },
+        ];
+
         function selectFoodProduct(product) {
-            // Show portion selector
-            const portion = prompt(`Portion? (Standard: ${product.serving || '100g'})`, product.serving || '100g');
-            if (!portion) return;
+            currentProduct = product;
+            selectedPortionGrams = 100;
 
-            // Calculate based on portion (simple: assume grams)
-            let multiplier = 1;
-            const match = portion.match(/(\d+)/);
-            if (match) {
-                const grams = parseInt(match[1]);
-                multiplier = grams / 100;
+            // Show product info
+            document.getElementById('portion-product-name').textContent = product.name;
+            document.getElementById('portion-base-info').textContent =
+                `${product.kcal100g} kcal · ${product.protein100g}g P · ${product.carbs100g}g K · ${product.fat100g}g F pro 100g`;
+
+            // Build portion options
+            const optionsHtml = PORTION_PRESETS.map((preset, idx) => `
+                <div class="portion-option ${idx === 0 ? 'selected' : ''}" onclick="selectPortion(${preset.grams}, this)">
+                    <span class="portion-option-icon">${preset.icon}</span>
+                    <div class="portion-option-info">
+                        <div class="portion-option-name">${preset.name}</div>
+                        <div class="portion-option-amount">${preset.grams}g</div>
+                    </div>
+                </div>
+            `).join('') + `
+                <div class="portion-custom">
+                    <div class="portion-custom-label">Eigene Menge eingeben:</div>
+                    <div class="portion-custom-input">
+                        <input type="number" id="custom-portion-input" placeholder="Gramm" min="1" oninput="updateCustomPortion(this.value)">
+                        <span style="color: var(--text-secondary); align-self: center;">g</span>
+                    </div>
+                </div>
+            `;
+            document.getElementById('portion-options').innerHTML = optionsHtml;
+
+            // Update preview
+            updatePortionPreview();
+
+            // Show modal
+            document.getElementById('portion-modal').classList.remove('hidden');
+            document.getElementById('search-results').classList.add('hidden');
+        }
+
+        function selectPortion(grams, element) {
+            selectedPortionGrams = grams;
+
+            // Update selection UI
+            document.querySelectorAll('.portion-option').forEach(el => el.classList.remove('selected'));
+            if (element) element.classList.add('selected');
+
+            // Clear custom input
+            const customInput = document.getElementById('custom-portion-input');
+            if (customInput) customInput.value = '';
+
+            updatePortionPreview();
+        }
+
+        function updateCustomPortion(value) {
+            const grams = parseInt(value) || 0;
+            if (grams > 0) {
+                selectedPortionGrams = grams;
+                // Deselect presets
+                document.querySelectorAll('.portion-option').forEach(el => el.classList.remove('selected'));
+                updatePortionPreview();
             }
+        }
 
+        function updatePortionPreview() {
+            if (!currentProduct) return;
+            const multiplier = selectedPortionGrams / 100;
+
+            document.getElementById('portion-kcal').textContent = Math.round(currentProduct.kcal100g * multiplier);
+            document.getElementById('portion-protein').textContent = Math.round(currentProduct.protein100g * multiplier * 10) / 10 + 'g';
+            document.getElementById('portion-carbs').textContent = Math.round(currentProduct.carbs100g * multiplier * 10) / 10 + 'g';
+            document.getElementById('portion-fat').textContent = Math.round(currentProduct.fat100g * multiplier * 10) / 10 + 'g';
+        }
+
+        function closePortionModal() {
+            document.getElementById('portion-modal').classList.add('hidden');
+            currentProduct = null;
+        }
+
+        function confirmPortion() {
+            if (!currentProduct) return;
+
+            const multiplier = selectedPortionGrams / 100;
             const mealData = {
-                name: product.name,
-                kcal: Math.round(product.kcal100g * multiplier),
-                protein: Math.round(product.protein100g * multiplier * 10) / 10,
-                carbs: Math.round(product.carbs100g * multiplier * 10) / 10,
-                fat: Math.round(product.fat100g * multiplier * 10) / 10,
+                name: currentProduct.name,
+                kcal: Math.round(currentProduct.kcal100g * multiplier),
+                protein: Math.round(currentProduct.protein100g * multiplier * 10) / 10,
+                carbs: Math.round(currentProduct.carbs100g * multiplier * 10) / 10,
+                fat: Math.round(currentProduct.fat100g * multiplier * 10) / 10,
                 time: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }),
                 id: Date.now(),
-                portion: portion,
+                portion: selectedPortionGrams + 'g',
                 source: 'openfoodfacts'
             };
 
@@ -1510,7 +2108,7 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             saveMealsForDate(state.currentNutritionDate, meals);
 
             document.getElementById('food-search').value = '';
-            document.getElementById('search-results').classList.add('hidden');
+            closePortionModal();
             updateNutritionDisplay();
             showToast(`✓ ${mealData.name} (${mealData.kcal} kcal)`);
         }
@@ -1533,30 +2131,44 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             const modal = document.getElementById('scanner-modal');
             const video = document.getElementById('scanner-video');
 
+            // Check BarcodeDetector FIRST before requesting camera
+            if (!('BarcodeDetector' in window)) {
+                const barcode = prompt('Barcode-Scanner nicht verfügbar in diesem Browser.\nBarcode manuell eingeben:');
+                if (barcode && barcode.trim()) {
+                    lookupBarcode(barcode.trim());
+                }
+                return;
+            }
+
             try {
                 // Request camera access
                 videoStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'environment' }
+                    video: {
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
                 });
                 video.srcObject = videoStream;
                 modal.classList.remove('hidden');
 
-                // Try to use BarcodeDetector API (Chrome)
-                if ('BarcodeDetector' in window) {
-                    barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] });
-                    detectBarcode();
-                } else {
-                    // Fallback: manual entry
-                    const barcode = prompt('Barcode-Scanner nicht verfügbar. Barcode manuell eingeben:');
-                    if (barcode) {
-                        closeBarcodeScanner();
-                        lookupBarcode(barcode);
-                    }
-                }
+                // Wait for video to be ready before starting detection
+                video.onloadedmetadata = () => {
+                    video.play();
+                    barcodeDetector = new BarcodeDetector({
+                        formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39']
+                    });
+                    // Small delay to ensure video is fully rendering
+                    setTimeout(() => detectBarcode(), 500);
+                };
             } catch (error) {
                 console.error('Camera error:', error);
                 showToast('Kamera-Zugriff verweigert', true);
-                closeBarcodeScanner();
+                // Offer manual entry as fallback
+                const barcode = prompt('Kamera nicht verfügbar. Barcode manuell eingeben:');
+                if (barcode && barcode.trim()) {
+                    lookupBarcode(barcode.trim());
+                }
             }
         }
 
@@ -1564,16 +2176,25 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             const video = document.getElementById('scanner-video');
             if (!barcodeDetector || !videoStream) return;
 
+            // Make sure video is ready
+            if (video.readyState < 2) {
+                requestAnimationFrame(detectBarcode);
+                return;
+            }
+
             try {
                 const barcodes = await barcodeDetector.detect(video);
                 if (barcodes.length > 0) {
                     const barcode = barcodes[0].rawValue;
+                    console.log('Barcode detected:', barcode);
+                    // Vibrate for feedback if available
+                    if (navigator.vibrate) navigator.vibrate(200);
                     closeBarcodeScanner();
                     lookupBarcode(barcode);
                     return;
                 }
             } catch (error) {
-                console.error('Detection error:', error);
+                // Silently continue - detection errors are normal
             }
 
             // Continue scanning
@@ -2431,6 +3052,7 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             updateCountdown();
             updateKneeDisplay();
             loadMessages();
+            updateChatHeader();
             updateActivitiesList();
             updateWeekStats();
             updateNutritionDisplay();
