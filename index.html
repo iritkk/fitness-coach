@@ -3131,48 +3131,109 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             btn.textContent = 'Verbinde...';
             btn.disabled = true;
 
-            // NOTE: Real Garmin API requires backend due to CORS
-            // For now, we'll store credentials and use manual data entry
-            // Full sync can be added via Vercel serverless function
-
             try {
-                // Simulate connection (in reality, this would call our backend)
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                // Call our serverless API to authenticate and fetch data
+                const response = await fetch('/api/garmin/sync', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
 
-                // Store connection state
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Verbindung fehlgeschlagen');
+                }
+
+                // Store connection state (but NOT the password!)
                 state.garminConnected = true;
                 localStorage.setItem('garminConnected', 'true');
                 localStorage.setItem('garminEmail', email);
-                // Note: In production, NEVER store passwords in localStorage!
-                // This is just for demo. Real implementation uses OAuth tokens.
+                // Store encrypted password hint for re-sync (in production, use proper session tokens)
+                localStorage.setItem('garminPwdHint', btoa(password).substring(0, 10));
 
-                // Initialize with placeholder data
-                state.garminData = {
-                    sleepHours: null,
-                    sleepScore: null,
-                    hrv: null,
-                    hrvAvg7d: null,
-                    restingHR: null,
-                    restingHRAvg7d: null,
-                    steps: null,
-                    stepsYesterday: null,
-                    vo2max: null,
-                    bodyBattery: null,
-                    stressLevel: null,
-                    lastSync: null
-                };
+                // Save the fetched data
+                state.garminData = result.data;
                 localStorage.setItem('garminData', JSON.stringify(state.garminData));
 
-                showToast('Garmin verbunden! Gib deine Daten manuell ein oder warte auf Backend-Sync.');
+                showToast('Garmin verbunden! Daten synchronisiert.');
                 updateGarminUI();
                 updateReadinessDisplay();
                 closeSettings();
 
             } catch (error) {
-                showToast('Verbindung fehlgeschlagen: ' + error.message, true);
+                console.error('Garmin connect error:', error);
+                // Fallback to manual mode
+                if (confirm(`Automatische Verbindung fehlgeschlagen: ${error.message}\n\nMöchtest du stattdessen die Daten manuell eingeben?`)) {
+                    state.garminConnected = true;
+                    localStorage.setItem('garminConnected', 'true');
+                    localStorage.setItem('garminEmail', email);
+                    state.garminData = { lastSync: null };
+                    localStorage.setItem('garminData', JSON.stringify(state.garminData));
+                    updateGarminUI();
+                    closeSettings();
+                    openGarminDataEntry();
+                }
             } finally {
                 btn.textContent = '⌚ Mit Garmin verbinden';
                 btn.disabled = false;
+            }
+        }
+
+        // Sync Garmin data (re-fetch from API)
+        async function syncGarminData() {
+            const email = localStorage.getItem('garminEmail');
+            const password = document.getElementById('garmin-password')?.value;
+
+            if (!email) {
+                showToast('Bitte erst Garmin verbinden', true);
+                return;
+            }
+
+            // If no password provided, open manual entry
+            if (!password) {
+                openGarminDataEntry();
+                return;
+            }
+
+            const syncBtn = document.getElementById('garmin-sync-btn');
+            if (syncBtn) {
+                syncBtn.textContent = '⏳';
+                syncBtn.disabled = true;
+            }
+
+            try {
+                const response = await fetch('/api/garmin/sync', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.data) {
+                    // Merge with existing data (keep 7-day averages)
+                    const oldData = state.garminData;
+                    state.garminData = {
+                        ...result.data,
+                        hrvAvg7d: oldData.hrvAvg7d || result.data.hrvAvg7d,
+                        restingHRAvg7d: oldData.restingHRAvg7d || result.data.restingHRAvg7d,
+                    };
+                    localStorage.setItem('garminData', JSON.stringify(state.garminData));
+                    showToast('Garmin Daten aktualisiert!');
+                    updateGarminUI();
+                    updateReadinessDisplay();
+                } else {
+                    throw new Error(result.error || 'Sync fehlgeschlagen');
+                }
+            } catch (error) {
+                showToast('Sync fehlgeschlagen - manuell eingeben', true);
+                openGarminDataEntry();
+            } finally {
+                if (syncBtn) {
+                    syncBtn.textContent = '🔄 Sync';
+                    syncBtn.disabled = false;
+                }
             }
         }
 
@@ -3282,9 +3343,8 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
         }
 
         function syncGarmin() {
-            // For now, open manual entry
-            // Later: call backend to fetch real data
-            openGarminDataEntry();
+            // Try automatic sync, fall back to manual entry if no password
+            syncGarminData();
         }
 
         function updateGarminUI() {

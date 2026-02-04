@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fitness-coach-v8';
+const CACHE_NAME = 'fitness-coach-v9';
 const urlsToCache = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', event => {
