@@ -500,6 +500,116 @@
         .countdown-event { font-size: 1rem; opacity: 0.9; }
         .countdown-date { font-size: 0.8rem; opacity: 0.7; margin-top: 0.25rem; }
 
+        /* Readiness Score Card */
+        .readiness-card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .readiness-score-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .readiness-score-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .readiness-score-label {
+            font-size: 0.6rem;
+            opacity: 0.8;
+        }
+        .readiness-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .readiness-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+        .readiness-limit {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        .readiness-warnings {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+        }
+        .readiness-warning {
+            background: rgba(252, 129, 129, 0.2);
+            color: #fc8181;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.25rem;
+            display: inline-block;
+        }
+
+        /* Garmin Data Card */
+        .garmin-card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .garmin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        .garmin-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .garmin-sync-btn {
+            background: #11a9ed;
+            border: none;
+            border-radius: 6px;
+            padding: 0.25rem 0.5rem;
+            color: white;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        .garmin-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+        .garmin-metric {
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            background: var(--bg-primary);
+            border-radius: 8px;
+        }
+        .garmin-metric-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .garmin-metric-label {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+        }
+        .garmin-not-connected {
+            text-align: center;
+            padding: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
         .quick-actions {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -933,6 +1043,33 @@
                     <div class="countdown-date" id="countdown-date">22. März 2026</div>
                 </div>
 
+                <!-- Readiness Score -->
+                <div class="readiness-card" id="readiness-card">
+                    <div class="readiness-score-circle" id="readiness-circle" style="background: #48bb78;">
+                        <div class="readiness-score-value" id="readiness-value">10</div>
+                        <div class="readiness-score-label">READY</div>
+                    </div>
+                    <div class="readiness-info">
+                        <div class="readiness-title" id="readiness-title">Volle Kapazität</div>
+                        <div class="readiness-limit" id="readiness-limit">Intensität nach Plan möglich</div>
+                        <div class="readiness-warnings" id="readiness-warnings"></div>
+                    </div>
+                </div>
+
+                <!-- Garmin Data -->
+                <div class="garmin-card" id="garmin-card">
+                    <div class="garmin-header">
+                        <div class="garmin-title">⌚ Garmin Daten</div>
+                        <button class="garmin-sync-btn" onclick="syncGarmin()" id="garmin-sync-btn" style="display: none;">🔄 Sync</button>
+                    </div>
+                    <div id="garmin-content">
+                        <div class="garmin-not-connected">
+                            Verbinde Garmin in den Einstellungen<br>
+                            <small style="opacity: 0.7;">für Schlaf, HRV, Body Battery & mehr</small>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="quick-actions">
                     <button class="quick-action" onclick="showScreen('chat'); askCoach('Was steht heute auf meinem Trainingsplan?')">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -1217,6 +1354,15 @@
                             Mit Strava verbinden
                         </button>
                     </div>
+                    <div class="form-group">
+                        <label class="form-label">Garmin Connect</label>
+                        <div id="garmin-status" style="margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">Nicht verbunden</div>
+                        <input type="email" class="form-input" id="garmin-email" placeholder="Garmin Email" style="margin-bottom: 0.5rem;">
+                        <input type="password" class="form-input" id="garmin-password" placeholder="Garmin Passwort" style="margin-bottom: 0.5rem;">
+                        <button class="strava-connect" onclick="connectGarmin()" id="garmin-btn" style="width: 100%; background: #11a9ed;">
+                            ⌚ Mit Garmin verbinden
+                        </button>
+                    </div>
                 </div>
 
                 <div class="form-section">
@@ -1391,12 +1537,111 @@
             weight: parseFloat(localStorage.getItem('weight')) || 87.5,
             stravaConnected: localStorage.getItem('stravaConnected') === 'true',
             stravaActivities: JSON.parse(localStorage.getItem('stravaActivities') || '[]'),
-            currentNutritionDate: new Date().toISOString().split('T')[0]
+            currentNutritionDate: new Date().toISOString().split('T')[0],
+            // Garmin Connect data
+            garminConnected: localStorage.getItem('garminConnected') === 'true',
+            garminData: JSON.parse(localStorage.getItem('garminData') || '{}'),
+            // Structure: { sleepHours, sleepScore, hrv, hrvAvg7d, restingHR, restingHRAvg7d, steps, vo2max, bodyBattery, stressLevel, lastSync }
         };
 
         // Computed protein goal (2g per kg)
         function getProteinGoal() {
             return Math.round(state.weight * 2);
+        }
+
+        // ============== READINESS SCORE ==============
+        function calculateReadinessScore() {
+            let score = 10; // Start at max
+            const warnings = [];
+            const g = state.garminData;
+
+            // 1. KNEE STATUS (highest priority)
+            if (state.kneeStatus === 'red') {
+                score = Math.min(score, 2);
+                warnings.push('Knie: Schmerzen - kein Lauftraining!');
+            } else if (state.kneeStatus === 'yellow') {
+                score -= 2;
+                warnings.push('Knie: Leichte Beschwerden - kein Tempo');
+            }
+
+            // 2. SLEEP (if Garmin data available)
+            if (g.sleepHours) {
+                if (g.sleepHours < 5) {
+                    score -= 2;
+                    warnings.push(`Schlaf: Nur ${g.sleepHours}h - stark reduziert`);
+                } else if (g.sleepHours < 6) {
+                    score -= 1;
+                    warnings.push(`Schlaf: ${g.sleepHours}h - unter optimal`);
+                }
+            }
+
+            // 3. HRV (Heart Rate Variability)
+            if (g.hrv && g.hrvAvg7d) {
+                const hrvDiff = ((g.hrv - g.hrvAvg7d) / g.hrvAvg7d) * 100;
+                if (hrvDiff < -15) {
+                    score -= 2;
+                    warnings.push(`HRV: ${Math.round(hrvDiff)}% unter Durchschnitt`);
+                } else if (hrvDiff < -5) {
+                    score -= 1;
+                    warnings.push(`HRV: Leicht unter Durchschnitt`);
+                }
+            }
+
+            // 4. RESTING HEART RATE
+            if (g.restingHR && g.restingHRAvg7d) {
+                const hrDiff = g.restingHR - g.restingHRAvg7d;
+                if (hrDiff > 5) {
+                    score -= 1;
+                    warnings.push(`Ruhepuls: +${Math.round(hrDiff)} bpm erhöht`);
+                }
+            }
+
+            // 5. BODY BATTERY (Garmin-specific)
+            if (g.bodyBattery !== undefined) {
+                if (g.bodyBattery < 25) {
+                    score -= 2;
+                    warnings.push(`Body Battery: Nur ${g.bodyBattery}% - stark erschöpft`);
+                } else if (g.bodyBattery < 50) {
+                    score -= 1;
+                    warnings.push(`Body Battery: ${g.bodyBattery}% - mäßig`);
+                }
+            }
+
+            // 6. STEPS (low = recovery day, bonus)
+            if (g.stepsYesterday !== undefined && g.stepsYesterday < 3000) {
+                score += 0.5;
+                // No warning, this is positive
+            }
+
+            // Clamp score between 0 and 10
+            score = Math.max(0, Math.min(10, score));
+
+            // Generate recommendation
+            let recommendation, limit;
+            if (score <= 2) {
+                recommendation = 'Ruhetag';
+                limit = 'Kein Training empfohlen';
+            } else if (score <= 4) {
+                recommendation = 'Leichte Aktivität';
+                limit = 'Max. 20 Min. lockeres Gehen/Dehnen';
+            } else if (score <= 6) {
+                recommendation = 'Moderates Training';
+                limit = 'Max. 45 Min. Zone 2';
+            } else if (score <= 8) {
+                recommendation = 'Normales Training';
+                limit = 'Planmäßig, aber achtsam';
+            } else {
+                recommendation = 'Volle Kapazität';
+                limit = 'Intensität nach Plan möglich';
+            }
+
+            return {
+                score: Math.round(score * 10) / 10,
+                recommendation,
+                limit,
+                warnings,
+                color: score <= 3 ? '#fc8181' : score <= 6 ? '#ecc94b' : '#48bb78'
+            };
         }
 
         // Helper functions
@@ -1596,6 +1841,7 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             localStorage.setItem('kneeHistory', JSON.stringify(state.kneeHistory.slice(-30)));
 
             updateKneeDisplay();
+            updateReadinessDisplay(); // Update Readiness Score when knee changes
 
             // If status changed to yellow/red, offer advice
             if (status !== 'green' && status !== oldStatus) {
@@ -2870,6 +3116,267 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             }
         }
 
+        // ============== GARMIN CONNECT ==============
+
+        async function connectGarmin() {
+            const email = document.getElementById('garmin-email').value.trim();
+            const password = document.getElementById('garmin-password').value;
+
+            if (!email || !password) {
+                showToast('Bitte Email und Passwort eingeben', true);
+                return;
+            }
+
+            const btn = document.getElementById('garmin-btn');
+            btn.textContent = 'Verbinde...';
+            btn.disabled = true;
+
+            // NOTE: Real Garmin API requires backend due to CORS
+            // For now, we'll store credentials and use manual data entry
+            // Full sync can be added via Vercel serverless function
+
+            try {
+                // Simulate connection (in reality, this would call our backend)
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Store connection state
+                state.garminConnected = true;
+                localStorage.setItem('garminConnected', 'true');
+                localStorage.setItem('garminEmail', email);
+                // Note: In production, NEVER store passwords in localStorage!
+                // This is just for demo. Real implementation uses OAuth tokens.
+
+                // Initialize with placeholder data
+                state.garminData = {
+                    sleepHours: null,
+                    sleepScore: null,
+                    hrv: null,
+                    hrvAvg7d: null,
+                    restingHR: null,
+                    restingHRAvg7d: null,
+                    steps: null,
+                    stepsYesterday: null,
+                    vo2max: null,
+                    bodyBattery: null,
+                    stressLevel: null,
+                    lastSync: null
+                };
+                localStorage.setItem('garminData', JSON.stringify(state.garminData));
+
+                showToast('Garmin verbunden! Gib deine Daten manuell ein oder warte auf Backend-Sync.');
+                updateGarminUI();
+                updateReadinessDisplay();
+                closeSettings();
+
+            } catch (error) {
+                showToast('Verbindung fehlgeschlagen: ' + error.message, true);
+            } finally {
+                btn.textContent = '⌚ Mit Garmin verbinden';
+                btn.disabled = false;
+            }
+        }
+
+        function disconnectGarmin() {
+            state.garminConnected = false;
+            state.garminData = {};
+            localStorage.removeItem('garminConnected');
+            localStorage.removeItem('garminEmail');
+            localStorage.removeItem('garminData');
+            updateGarminUI();
+            updateReadinessDisplay();
+        }
+
+        // Manual Garmin data entry (until backend sync is implemented)
+        function openGarminDataEntry() {
+            const g = state.garminData;
+            const html = `
+                <div style="padding: 1rem;">
+                    <h3 style="margin-bottom: 1rem;">Garmin Daten eingeben</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                        Gib deine heutigen Werte von der Garmin Watch ein:
+                    </p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                        <div>
+                            <label style="font-size: 0.8rem; color: var(--text-secondary);">Schlaf (Stunden)</label>
+                            <input type="number" step="0.5" id="g-sleep" class="form-input" value="${g.sleepHours || ''}" placeholder="z.B. 7.5">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; color: var(--text-secondary);">Body Battery (%)</label>
+                            <input type="number" id="g-battery" class="form-input" value="${g.bodyBattery || ''}" placeholder="z.B. 75">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; color: var(--text-secondary);">HRV (ms)</label>
+                            <input type="number" id="g-hrv" class="form-input" value="${g.hrv || ''}" placeholder="z.B. 45">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; color: var(--text-secondary);">Ruhepuls (bpm)</label>
+                            <input type="number" id="g-rhr" class="form-input" value="${g.restingHR || ''}" placeholder="z.B. 52">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; color: var(--text-secondary);">Schritte gestern</label>
+                            <input type="number" id="g-steps" class="form-input" value="${g.stepsYesterday || ''}" placeholder="z.B. 8500">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; color: var(--text-secondary);">VO2max</label>
+                            <input type="number" id="g-vo2" class="form-input" value="${g.vo2max || ''}" placeholder="z.B. 48">
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                        <button class="btn btn-primary" onclick="saveGarminData()" style="flex: 1;">Speichern</button>
+                        <button class="btn btn-secondary" onclick="closeGarminDataEntry()">Abbrechen</button>
+                    </div>
+                </div>
+            `;
+
+            const modal = document.createElement('div');
+            modal.id = 'garmin-entry-modal';
+            modal.className = 'modal-overlay active';
+            modal.innerHTML = `<div class="modal" style="max-width: 400px;">${html}</div>`;
+            modal.onclick = (e) => { if (e.target === modal) closeGarminDataEntry(); };
+            document.body.appendChild(modal);
+        }
+
+        function closeGarminDataEntry() {
+            const modal = document.getElementById('garmin-entry-modal');
+            if (modal) modal.remove();
+        }
+
+        function saveGarminData() {
+            const g = state.garminData;
+
+            const sleepVal = parseFloat(document.getElementById('g-sleep').value);
+            const batteryVal = parseInt(document.getElementById('g-battery').value);
+            const hrvVal = parseInt(document.getElementById('g-hrv').value);
+            const rhrVal = parseInt(document.getElementById('g-rhr').value);
+            const stepsVal = parseInt(document.getElementById('g-steps').value);
+            const vo2Val = parseInt(document.getElementById('g-vo2').value);
+
+            // Update values if provided
+            if (!isNaN(sleepVal)) g.sleepHours = sleepVal;
+            if (!isNaN(batteryVal)) g.bodyBattery = batteryVal;
+            if (!isNaN(hrvVal)) {
+                // Update 7-day average
+                if (g.hrv) {
+                    g.hrvAvg7d = g.hrvAvg7d ? (g.hrvAvg7d * 0.85 + g.hrv * 0.15) : g.hrv;
+                }
+                g.hrv = hrvVal;
+                if (!g.hrvAvg7d) g.hrvAvg7d = hrvVal;
+            }
+            if (!isNaN(rhrVal)) {
+                if (g.restingHR) {
+                    g.restingHRAvg7d = g.restingHRAvg7d ? (g.restingHRAvg7d * 0.85 + g.restingHR * 0.15) : g.restingHR;
+                }
+                g.restingHR = rhrVal;
+                if (!g.restingHRAvg7d) g.restingHRAvg7d = rhrVal;
+            }
+            if (!isNaN(stepsVal)) g.stepsYesterday = stepsVal;
+            if (!isNaN(vo2Val)) g.vo2max = vo2Val;
+
+            g.lastSync = new Date().toISOString();
+
+            localStorage.setItem('garminData', JSON.stringify(g));
+            closeGarminDataEntry();
+            updateGarminUI();
+            updateReadinessDisplay();
+            showToast('Garmin Daten gespeichert');
+        }
+
+        function syncGarmin() {
+            // For now, open manual entry
+            // Later: call backend to fetch real data
+            openGarminDataEntry();
+        }
+
+        function updateGarminUI() {
+            const btn = document.getElementById('garmin-btn');
+            const statusEl = document.getElementById('garmin-status');
+            const syncBtn = document.getElementById('garmin-sync-btn');
+            const contentEl = document.getElementById('garmin-content');
+
+            if (btn) {
+                if (state.garminConnected) {
+                    const email = localStorage.getItem('garminEmail') || '';
+                    btn.innerHTML = `✓ Verbunden <span style="font-size:0.75rem; opacity:0.8;">(Trennen)</span>`;
+                    btn.style.background = '#48bb78';
+                    btn.onclick = () => {
+                        if (confirm('Garmin-Verbindung trennen?')) disconnectGarmin();
+                    };
+                    if (statusEl) statusEl.textContent = `Verbunden als ${email}`;
+                } else {
+                    btn.innerHTML = '⌚ Mit Garmin verbinden';
+                    btn.style.background = '#11a9ed';
+                    btn.onclick = connectGarmin;
+                    if (statusEl) statusEl.textContent = 'Nicht verbunden';
+                }
+            }
+
+            if (syncBtn) {
+                syncBtn.style.display = state.garminConnected ? 'block' : 'none';
+            }
+
+            // Update dashboard card
+            if (contentEl) {
+                if (state.garminConnected) {
+                    const g = state.garminData;
+                    contentEl.innerHTML = `
+                        <div class="garmin-metrics">
+                            <div class="garmin-metric" onclick="openGarminDataEntry()" style="cursor: pointer;">
+                                <div class="garmin-metric-value">${g.sleepHours ? g.sleepHours + 'h' : '-'}</div>
+                                <div class="garmin-metric-label">Schlaf</div>
+                            </div>
+                            <div class="garmin-metric" onclick="openGarminDataEntry()" style="cursor: pointer;">
+                                <div class="garmin-metric-value">${g.bodyBattery !== null ? g.bodyBattery + '%' : '-'}</div>
+                                <div class="garmin-metric-label">Battery</div>
+                            </div>
+                            <div class="garmin-metric" onclick="openGarminDataEntry()" style="cursor: pointer;">
+                                <div class="garmin-metric-value">${g.hrv ? g.hrv : '-'}</div>
+                                <div class="garmin-metric-label">HRV</div>
+                            </div>
+                            <div class="garmin-metric" onclick="openGarminDataEntry()" style="cursor: pointer;">
+                                <div class="garmin-metric-value">${g.restingHR ? g.restingHR : '-'}</div>
+                                <div class="garmin-metric-label">Ruhepuls</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 0.5rem; font-size: 0.7rem; color: var(--text-secondary);">
+                            ${g.lastSync ? 'Aktualisiert: ' + new Date(g.lastSync).toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'}) : 'Tippe zum Eingeben'}
+                        </div>
+                    `;
+                } else {
+                    contentEl.innerHTML = `
+                        <div class="garmin-not-connected">
+                            Verbinde Garmin in den Einstellungen<br>
+                            <small style="opacity: 0.7;">für Schlaf, HRV, Body Battery & mehr</small>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function updateReadinessDisplay() {
+            const readiness = calculateReadinessScore();
+
+            const circleEl = document.getElementById('readiness-circle');
+            const valueEl = document.getElementById('readiness-value');
+            const titleEl = document.getElementById('readiness-title');
+            const limitEl = document.getElementById('readiness-limit');
+            const warningsEl = document.getElementById('readiness-warnings');
+
+            if (circleEl) circleEl.style.background = readiness.color;
+            if (valueEl) valueEl.textContent = readiness.score;
+            if (titleEl) titleEl.textContent = readiness.recommendation;
+            if (limitEl) limitEl.textContent = readiness.limit;
+
+            if (warningsEl) {
+                if (readiness.warnings.length > 0) {
+                    warningsEl.innerHTML = readiness.warnings.map(w =>
+                        `<div class="readiness-warning">${w}</div>`
+                    ).join('');
+                } else {
+                    warningsEl.innerHTML = '';
+                }
+            }
+        }
+
         // Activity Modal
         function openActivityModal() {
             document.getElementById('activity-date').value = new Date().toISOString().split('T')[0];
@@ -3057,6 +3564,8 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             updateWeekStats();
             updateNutritionDisplay();
             updateStravaUI();
+            updateGarminUI();
+            updateReadinessDisplay();
 
             // Check for Strava OAuth callback
             await handleStravaCallback();
