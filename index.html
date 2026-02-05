@@ -1843,16 +1843,9 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             updateKneeDisplay();
             updateReadinessDisplay(); // Update Readiness Score when knee changes
 
-            // If status changed to yellow/red, offer advice
-            if (status !== 'green' && status !== oldStatus) {
-                showScreen('chat');
-                setTimeout(() => {
-                    const msg = status === 'yellow'
-                        ? 'Mein Knie fühlt sich heute nicht 100% an (gelb). Was empfiehlst du für heute?'
-                        : 'Mein Knie schmerzt heute (rot). Was soll ich tun?';
-                    askCoach(msg);
-                }, 300);
-            }
+            // Show feedback toast instead of jumping to chat
+            const statusText = status === 'green' ? '🟢 Alles gut' : status === 'yellow' ? '🟡 Leichte Beschwerden' : '🔴 Schmerzen';
+            showToast(`Knie-Status: ${statusText} - Score aktualisiert`);
         }
 
         // ============== MULTI-CHAT SYSTEM ==============
