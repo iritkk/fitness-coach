@@ -3138,12 +3138,12 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
                     throw new Error(result.error || 'Verbindung fehlgeschlagen');
                 }
 
-                // Store connection state (but NOT the password!)
+                // Store connection state
                 state.garminConnected = true;
                 localStorage.setItem('garminConnected', 'true');
                 localStorage.setItem('garminEmail', email);
-                // Store encrypted password hint for re-sync (in production, use proper session tokens)
-                localStorage.setItem('garminPwdHint', btoa(password).substring(0, 10));
+                // Store encoded password for re-sync (in production, use proper session tokens!)
+                localStorage.setItem('garminPassword', btoa(password));
 
                 // Save the fetched data
                 state.garminData = result.data;
@@ -3161,6 +3161,7 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
                     state.garminConnected = true;
                     localStorage.setItem('garminConnected', 'true');
                     localStorage.setItem('garminEmail', email);
+                    localStorage.setItem('garminPassword', btoa(password)); // Save for future sync attempts
                     state.garminData = { lastSync: null };
                     localStorage.setItem('garminData', JSON.stringify(state.garminData));
                     updateGarminUI();
@@ -3176,7 +3177,8 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
         // Sync Garmin data (re-fetch from API)
         async function syncGarminData() {
             const email = localStorage.getItem('garminEmail');
-            const password = document.getElementById('garmin-password')?.value;
+            const storedPwd = localStorage.getItem('garminPassword');
+            const password = storedPwd ? atob(storedPwd) : document.getElementById('garmin-password')?.value;
 
             if (!email) {
                 showToast('Bitte erst Garmin verbinden', true);
@@ -3235,6 +3237,7 @@ ${totals.protein < proteinGoal * 0.5 ? '⚠️ Protein-Defizit! Empfehle protein
             state.garminData = {};
             localStorage.removeItem('garminConnected');
             localStorage.removeItem('garminEmail');
+            localStorage.removeItem('garminPassword');
             localStorage.removeItem('garminData');
             updateGarminUI();
             updateReadinessDisplay();
